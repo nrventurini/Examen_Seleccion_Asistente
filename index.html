@@ -1,0 +1,771 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examen Psicométrico</title>
+  <meta name="robots" content="noindex">
+
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f0f0; padding: 20px; }
+    .container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; }
+    .progress-bar { height: 20px; background: #ddd; border-radius: 10px; margin-bottom: 20px; }
+    .progress-fill { height: 100%; width: 0%; background: #4caf50; transition: width 0.3s; }
+    .question-block { margin-bottom: 30px; }
+    .hidden { display: none; }
+    button { background: #4caf50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+    .nav-buttons { display: flex; justify-content: space-between; }
+
+    .nav-buttons.hidden { display: none !important; }
+    .hidden { display: none !important; }
+
+
+    /* Estado normal del botón (ajusta a tu paleta) */
+    #btnEnviar {
+      transition: all 0.2s ease;
+    }
+
+    /* Estado enviando */
+    #btnEnviar.sending {
+      background-color: #9e9e9e !important; /* gris u otro color */
+      color: #ffffff !important;
+      cursor: not-allowed;
+      opacity: 0.9;
+      position:relative;
+    } 
+
+    /* Spinner básico (usa currentColor) */
+    .ve-spinner {
+      width: 20px; height: 20px;
+      margin-right: 8px;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      display: inline-block;
+      vertical-align: -2px;
+      animation: ve-spin 0.7s linear infinite;
+    }
+
+    /* Oculto por defecto dentro del botón */
+    #btnEnviar .ve-spinner { display: none; }
+
+    #btnEnviar.sending .ve-spinner { display: inline-block; }
+
+    @keyframes ve-spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+
+
+</head>
+<body>
+<div class="container">
+  <h1>Cuestionario de segmentación de perfiles</h1>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<p id="progressText" style="text-align:right; font-weight:bold;"></p>
+
+  <form id="quizForm">
+  <div class='question-block' id='block0' style='display: none;'>
+<h2>Bienvenido/a al Examen de Selección para el puesto de Asistente de Bienestar</h2>
+<div class='question'><p>Este cuestionario no busca medir tus conocimientos teóricos, sino tu manera de pensar y de actuar frente a situaciones reales.</p>
+<p>Encontrarás 15 casos prácticos relacionados con la misión de VitalExtension: acercar la medicina de precisión y la longevidad a todas las personas, de forma humana, accesible y científica.</p>
+<p>No existen respuestas correctas o incorrectas. Cada opción refleja un estilo distinto de afrontar los retos. ¡Consejo!: Responde de manera sincera la alternativa que más haya resonado contigo, sin darle más vueltas.</p>
+<p>Tómate tu tiempo (sólo lo puedes hacer 1 vez). Este test no solo nos ayuda a conocerte mejor, también te permitirá descubrir cómo encajan tus valores con nuestra visión de transformar la salud y la vitalidad en la era digital.</p>
+<p>👉 Duración aproximada: 6 minutos.</p>
+</div>
+</div>
+<div class='question-block' id='block1' style='display: none;'>
+<h2>Edad biológica</h2>
+<div class='question'><p><strong>Un usuario pregunta: “¿Qué gano conociendo mi edad biológica si ya sé mi edad cronológica?". ¿Cómo actúas?</strong></p>
+<label><input type='radio' name='block1_q0' value='1' data-question-id='block1_q0'  data-weight='1' data-pilar='Científico' onchange='actualizarProgreso()'> Explicarle que la edad biológica mide el estado real de sus células y es un mejor predictor de longevidad.</label><br><br>
+<label><input type='radio' name='block1_q0' value='1' data-question-id='block1_q0'  data-weight='1' data-pilar='Emocional-Social' onchange='actualizarProgreso()'> Mostrarle ejemplos de cómo otros clientes cambiaron hábitos tras conocer su edad biológica.</label><br><br>
+<label><input type='radio' name='block1_q0' value='1' data-question-id='block1_q0'  data-weight='1' data-pilar='Ingeniería' onchange='actualizarProgreso()'> Recordarle que lo que no se mide no se mejora, y que este número es la brújula de su plan personalizado.</label><br><br>
+<label><input type='radio' name='block1_q0' value='0' data-question-id='block1_q0'  data-weight='1' data-pilar='Distractor' onchange='actualizarProgreso()'> Decirle que es un dato curioso, pero que no aporta nada relevante.</label><br><br>
+</div>
+</div>
+<div class='question-block' id='block2' style='display: none;'>
+<h2>Expectativas milagrosas</h2>
+<div class='question'><p><strong>Un usuario insiste en que quiere resultados inmediatos de un programa digital de salud, aunque sabes que estos dependen de constancia y tiempo. ¿Cómo respondes?</strong></p>
+<label><input type='radio' name='block2_q0' value='1' data-question-id='block2_q0'  data-weight='1' data-pilar='Empático' onchange='actualizarProgreso()'> Escuchas su expectativa, validas su motivación y explicas que los cambios sostenibles requieren un proceso progresivo.</label><br><br>
+<label><input type='radio' name='block2_q0' value='1' data-question-id='block2_q0'  data-weight='1' data-pilar='Analítico' onchange='actualizarProgreso()'> Le cuentas que cada persona es diferente, y que lo importante es el seguimiento continuo y la personalización.</label><br><br>
+<label><input type='radio' name='block2_q0' value='1' data-question-id='block2_q0'  data-weight='1' data-pilar='Pragmático' onchange='actualizarProgreso()'> Le propones fijar metas a corto plazo medibles, para que vea progreso realista mientras trabaja en el objetivo final.</label><br><br>
+<label><input type='radio' name='block2_q0' value='0' data-question-id='block2_q0'  data-weight='1' data-pilar='Distractor' onchange='actualizarProgreso()'> Le prometes que conseguirá el resultado inmediato que busca</label><br>
+</div>
+</div>
+<div class='question-block' id='block3' style='display: none;'>
+<h2>Paciente mayor y digital</h2>
+<div class='question'><p><strong>Un paciente mayor no entiende cómo usar la plataforma digital de VitalExtension. ¿Cómo reaccionas?</strong></p>
+<label><input type='radio' name='block3_q0' value='1' data-question-id='block3_q0'  data-weight='1' data-pilar='Empático' onchange='actualizarProgreso()'> Hacer una videollamada y guiarlo paso a paso hasta que se sienta seguro.</label><br><br>
+<label><input type='radio' name='block3_q0' value='1' data-question-id='block3_q0'  data-weight='1' data-pilar='Pedagógico' onchange='actualizarProgreso()'> Enviarle un tutorial visual, con imágenes grandes y lenguaje sencillo.</label><br><br>
+<label><input type='radio' name='block3_q0' value='0' data-question-id='block3_q0'  data-weight='1' data-pilar='Distractor' onchange='actualizarProgreso()'> Mandarle un manual genérico sin personalización y desentenderte.</label><br><br>
+<label><input type='radio' name='block3_q0' value='1' data-question-id='block3_q0'  data-weight='1' data-pilar='Emocional' onchange='actualizarProgreso()'> Reafirmarle que no está solo; aunque seamos digitales, siempre tendrá apoyo humano cercano.</label><br>
+</div>
+</div>
+<div class='question-block' id='block4' style='display: none;'>
+<h2>Biomarcadores</h2>
+<div class='question'><p><strong>Un paciente pregunta por qué tiene que hacerse nuevos análisis de biomarcadores cuando cree que basta con la analítica básica que se hizo el año pasado. ¿Cómo lo explicas?</strong></p>
+<label><input type='radio' name='block4_q0' value='1' data-question-id='block4_q0'  data-weight='1' data-pilar='Empático' onchange='actualizarProgreso()'> Le reconoces la duda y le explicas que es normal pensar que una analítica básica es suficiente, pero que los biomarcadores permiten ver cambios invisibles mucho antes.</label><br><br>
+<label><input type='radio' name='block4_q0' value='1' data-question-id='block4_q0'  data-weight='1' data-pilar='Científico' onchange='actualizarProgreso()'> Le explicas que una analítica básica solo muestra parámetros generales, mientras que los biomarcadores avanzados permiten medir edad biológica, inflamación crónica y riesgo silencioso de enfermedades antes de que den síntomas.</label><br><br>
+<label><input type='radio' name='block4_q0' value='1' data-question-id='block4_q0'  data-weight='1' data-pilar='Pragmático' onchange='actualizarProgreso()'> Le pones un ejemplo claro: igual que no revisamos el coche una sola vez en su vida, la salud necesita chequeos periódicos con indicadores más profundos.</label><br><br>
+<label><input type='radio' name='block4_q0' value='0' data-question-id='block4_q0'  data-weight='1' data-pilar='Distractor' onchange='actualizarProgreso()'> Le dices que probablemente con la analítica del año pasado es más que suficiente.</label><br>
+</div>
+</div>
+<div class='question-block' id='block5' style='display: none;'>
+<h2>Estrés</h2>
+<div class='question'><p><strong>Un usuario dice: “Estoy demasiado estresado para hacer cambios”.</strong></p>
+<label><input type='radio' name='block5_q0' value='1' data-question-id='block5_q0'  data-weight='1' data-pilar='Emocional' onchange='actualizarProgreso()'> Recordarle que la longevidad empieza por cuidar la mente y reducir el estrés.</label><br><br>
+<label><input type='radio' name='block5_q0' value='1' data-question-id='block5_q0'  data-weight='1' data-pilar='Práctico' onchange='actualizarProgreso()'> Ofrecerle microacciones sencillas que pueda empezar sin sentirse abrumado.</label><br><br>
+<label><input type='radio' name='block5_q0' value='1' data-question-id='block5_q0'  data-weight='1' data-pilar='Científico' onchange='actualizarProgreso()'> Mostrarle estudios que prueban que reducir estrés mejora marcadores de envejecimiento.</label><br><br>
+<label><input type='radio' name='block5_q0' value='0' data-question-id='block5_q0'  data-weight='1' data-pilar='Distractor' onchange='actualizarProgreso()'> Decirle que debe esforzarse igual aunque esté estresado.</label><br>
+</div>
+</div>
+<div class='question-block' id='block8' style='display: none;'>
+<h2>Datos y Privacidad</h2>
+<div class='question'><p><strong>Un usuario de una plataforma digital te pregunta si sus datos personales estarán protegidos. ¿Qué harías?</strong></p>
+<label><input type='radio' name='block8_q0' value='1' data-question-id='block8_q0'  data-weight='1' data-pilar='Experto' onchange='actualizarProgreso()'> Le explicas con calma las medidas de seguridad y protocolos de privacidad que se aplican.</label><br><br>
+<label><input type='radio' name='block8_q0' value='1' data-question-id='block8_q0'  data-weight='1' data-pilar='Empático' onchange='actualizarProgreso()'> Le transmites que la confianza es esencial, y que puede solicitar información más detallada si lo desea.</label><br><br>
+<label><input type='radio' name='block8_q0' value='1' data-question-id='block8_q0'  data-weight='1' data-pilar='Educador' onchange='actualizarProgreso()'> Le compartes ejemplos de buenas prácticas en gestión segura de datos en servicios digitales.</label><br><br>
+<label><input type='radio' name='block8_q0' value='0' data-question-id='block8_q0'  data-weight='1' data-pilar='Distractor' onchange='actualizarProgreso()'> Le dices que no se preocupe, que los detalles técnicos no importan, lo importante es confiar.</label><br>
+</div>
+</div>
+<div class='question-block' id='block9' style='display: none;'>
+<h2>Resolución de conflicto</h2>
+<div class='question'><p><strong>Un paciente tenía cita con su médico habitual, pero este ha tenido que cancelarla a última hora por un contratiempo. El paciente está muy molesto y quiere atención pronto. ¿Cómo lo acompañarías para resolver la situación?</strong></p>
+<label><input type='radio' name='block9_q0' value='1' data-question-id='block9_q0'  data-weight='1' data-pilar='Pragmático' onchange='actualizarProgreso()'> Le reconocería su malestar y le explicaría que a través de VitalCare puede elegir otro médico disponible incluso hoy mismo, para que no tenga que esperar.</label><br><br>
+<label><input type='radio' name='block9_q0' value='1' data-question-id='block9_q0'  data-weight='1' data-pilar='Empático' onchange='actualizarProgreso()'> Intentaría tranquilizarlo, destacando que aunque el contratiempo no era previsible, gracias a VitalCare puede intentar conseguir atención inmediata sin tener que reprogramar para otra semana.</label><br><br>
+<label><input type='radio' name='block9_q0' value='1' data-question-id='block9_q0'  data-weight='1' data-pilar='Científico' onchange='actualizarProgreso()'> Lo acompañaría paso a paso en la plataforma para que vea lo fácil que es elegir otro profesional disponible, reforzando la confianza en la flexibilidad del servicio.</label><br><br>
+<label><input type='radio' name='block9_q0' value='0' data-question-id='block9_q0'  data-weight='1' data-pilar='Distractor' onchange='actualizarProgreso()'> Le diría que lo mejor es esperar a que su médico habitual tenga disponibilidad, ya que cambiar de profesional podría ser incómodo.</label><br>
+</div>
+</div>
+<div class='question-block' id='block10' style='display: none;'>
+<h2>Rigor Científico</h2>
+<div class='question'><p><strong>Un usuario escéptico pregunta: "¿De verdad usan ciencia seria?"</strong></p>
+<label><input type='radio' name='block10_q0' value='0' data-question-id='block10_q0'  data-weight='1' data-pilar='Distractor' onchange='actualizarProgreso()'> Responder que seguimos solo blogs populares.</label><br><br>
+<label><input type='radio' name='block10_q0' value='1' data-question-id='block10_q0'  data-weight='1' data-pilar='Científico' onchange='actualizarProgreso()'> Explicarle que nos basamos en estudios en humanos publicados en revistas Q1 como Nature o The Lancet.</label><br><br>
+<label><input type='radio' name='block10_q0' value='1' data-question-id='block10_q0'  data-weight='1' data-pilar='Ético' onchange='actualizarProgreso()'> Contarle que nuestro comité de validación revisa cada recomendación</label><br><br>
+<label><input type='radio' name='block10_q0' value='1' data-question-id='block10_q0'  data-weight='1' data-pilar='Emocional-Práctico' onchange='actualizarProgreso()'> Mostrarle que traducimos ciencia compleja en consejos aplicables día a día.</label><br>
+</div>
+</div>
+<div class='question-block' id='block11' style='display: none;'>
+<h2>Comunidad</h2>
+<div class='question'><p><strong>Un cliente se siente solo en su proceso de cambio</strong></p>
+<label><input type='radio' name='block11_q0' value='0' data-question-id='block11_q0'  data-weight='1' data-pilar='Distractor' onchange='actualizarProgreso()'> Decirle que debe ser fuerte por sí mismo</label><br><br>
+<label><input type='radio' name='block11_q0' value='1' data-question-id='block11_q0'  data-weight='1' data-pilar='Emocional' onchange='actualizarProgreso()'> Recordarle que VitalExtension es también una comunidad que lo acompaña</label><br><br>
+<label><input type='radio' name='block11_q0' value='1' data-question-id='block11_q0'  data-weight='1' data-pilar='Social' onchange='actualizarProgreso()'> Conectarlo con grupos de usuarios que comparten experiencias.</label><br><br>
+<label><input type='radio' name='block11_q0' value='1' data-question-id='block11_q0'  data-weight='1' data-pilar='Científico' onchange='actualizarProgreso()'> Mostrarle evidencia de que la adherencia mejora al estar acompañado.</label><br>
+</div>
+</div>
+<div class='question-block' id='block12' style='display: none;'>
+<h2>Inteligencia Artificial en Medicina</h2>
+<div class='question'><p><strong>Un cliente dice: "Me da miedo que usen inteligencia artificial en mi salud"</strong></p>
+<label><input type='radio' name='block12_q0' value='0' data-question-id='block12_q0'  data-weight='1' data-pilar='Distractor' onchange='actualizarProgreso()'> Decirle que la IA sustituye a los médicos.</label><br><br>
+<label><input type='radio' name='block12_q0' value='1' data-question-id='block12_q0'  data-weight='1' data-pilar='Ético' onchange='actualizarProgreso()'> Explicarle que la IA en VitalExtension es un copiloto que apoya al médico, nunca lo sustituye.</label><br><br>
+<label><input type='radio' name='block12_q0' value='1' data-question-id='block12_q0'  data-weight='1' data-pilar='Científico' onchange='actualizarProgreso()'> Contarle que la IA permite analizar grandes volúmenes de biomarcadores para personalizar al máximo.</label><br><br>
+<label><input type='radio' name='block12_q0' value='1' data-question-id='block12_q0'  data-weight='1' data-pilar='Emocional' onchange='actualizarProgreso()'> Recordarle que la IA está para hacer su vida más fácil y darle más confianza en sus decisiones.</label><br>
+</div>
+</div>
+<div class='question-block' id='block13' style='display: none;'>
+<h2>Romper moldes</h2>
+<div class='question'><p><strong>Un amigo del cliente le dice: “Eso de la longevidad es solo para ricos”. ¿Qué debería responder?</strong></p>
+<label><input type='radio' name='block13_q0' value='0' data-question-id='block13_q0'  data-weight='1' data-pilar='Distractor' onchange='actualizarProgreso()'> Sí, es un lujo exclusivo</label><br><br>
+<label><input type='radio' name='block13_q0' value='1' data-question-id='block13_q0'  data-weight='1' data-pilar='Propósito' onchange='actualizarProgreso()'> No, VitalExtension quiere que todos tengamos acceso a ciencia avanzada, sin importar el bolsillo</label><br><br>
+<label><input type='radio' name='block13_q0' value='1' data-question-id='block13_q0'  data-weight='1' data-pilar='Racional-Económico' onchange='actualizarProgreso()'> Ellos eliminan gastos innecesarios para que la ciencia sea accesible</label><br><br>
+<label><input type='radio' name='block13_q0' value='1' data-question-id='block13_q0'  data-weight='1' data-pilar='Emocional' onchange='actualizarProgreso()'> Me hace sentir que estoy en una comunidad que cuida de mí como persona, no como cliente VIP</label><br>
+</div>
+</div>
+<div class='question-block' id='block14' style='display: none;'>
+<h2>Comparación competencia</h2>
+<div class='question'><p><strong>Un usuario de una plataforma digital te expresa dudas porque piensa que, al tener un precio más bajo que otras opciones similares, la calidad podría ser inferior. ¿Cómo respondes?</strong></p>
+<label><input type='radio' name='block14_q0' value='1' data-question-id='block14_q0'  data-weight='1' data-pilar='Mediador' onchange='actualizarProgreso()'> Escuchar primero, empatizar con su temor y luego explicarle cómo el modelo digital permite reducir costes sin sacrificar calidad.</label><br><br>
+<label><input type='radio' name='block14_q0' value='1' data-question-id='block14_q0'  data-weight='1' data-pilar='Directo' onchange='actualizarProgreso()'> Le explicas directamente que el precio no siempre refleja la calidad, y que en este caso el modelo digital elimina costes innecesarios.</label><br><br>
+<label><input type='radio' name='block14_q0' value='1' data-question-id='block14_q0'  data-weight='1' data-pilar='Pragmático' onchange='actualizarProgreso()'> Le propones que valore la experiencia tras usar el servicio antes de juzgarlo.</label><br><br>
+<label><input type='radio' name='block14_q0' value='0' data-question-id='block14_q0'  data-weight='1' data-pilar='Distractor' onchange='actualizarProgreso()'> Le respondes que los precios bajos siempre implican menor calidad.</label><br>
+</div>
+</div>
+<div class='question-block' id='block15' style='display: none;'>
+<h2>Inversión en salud</h2>
+<div class='question'><p><strong>Durante una sesión, un cliente da pistas que gasta mucho dinero en ocio y cosas materiales, pero duda si merece la pena invertir en pruebas de biomarcadores o servicios de longevidad. Quiere tu opinión sobre si realmente vale la pena destinar recursos a su salud futura.</strong></p>
+<label><input type='radio' name='block15_q0' value='1' data-question-id='block15_q0'  data-weight='1' data-pilar='Racional' onchange='actualizarProgreso()'> Le explicas que invertir en su salud hoy es la mejor manera de evitar gastos médicos mayores en el futuro: es una estrategia inteligente y preventiva.</label><br><br>
+<label><input type='radio' name='block15_q0' value='1' data-question-id='block15_q0'  data-weight='1' data-pilar='Emocional' onchange='actualizarProgreso()'> Le dices que priorizar su bienestar es una forma de demostrar amor propio y responsabilidad hacia sus seres queridos.</label><br><br>
+<label><input type='radio' name='block15_q0' value='1' data-question-id='block15_q0'  data-weight='1' data-pilar='Propósito' onchange='actualizarProgreso()'> Le cuentas que los servicios de VitalExtension son como una brújula: una inversión que le permite tomar decisiones informadas y ganar años de vitalidad.</label><br><br>
+<label><input type='radio' name='block15_q0' value='0' data-question-id='block15_q0'  data-weight='1' data-pilar='Distractor' onchange='actualizarProgreso()'> Le respondes que la salud no necesita inversión, que basta con esperar a que aparezcan problemas.</label><br>
+</div>
+</div>
+<div class='question-block' id='block16' style='display: none;'>
+<h2>Relación con redes sociales</h2>
+<div class='question'><p><strong>Durante la primera sesión con un cliente, él comenta que suele pasar bastante tiempo en redes sociales, pero no sabe si eso puede jugar a favor o en contra de su salud. Te pregunta cómo debería usarlas de forma que aporten valor en su proceso de longevidad.</strong></p>
+<label><input type='radio' name='block16_q0' value='1' data-question-id='block16_q0'  data-weight='1' data-pilar='Social' onchange='actualizarProgreso()'> Le explicas que puede usarlas para inspirarse con contenido de salud de calidad y luego compartirlo con sus familiares y amigos más cercanos.</label><br><br>
+<label><input type='radio' name='block16_q0' value='0' data-question-id='block16_q0'  data-weight='1' data-pilar='Distractor' onchange='actualizarProgreso()'> Le dices que las redes son solo para ocio y que no deberían usarse para temas de salud.</label><br><br>
+<label><input type='radio' name='block16_q0' value='1' data-question-id='block16_q0'  data-weight='1' data-pilar='Racional-Científico' onchange='actualizarProgreso()'> Le aconsejas que siga cuentas científicas y médicas de confianza para mantenerse actualizado, pero siempre contrastando con evidencia real.</label><br><br>
+<label><input type='radio' name='block16_q0' value='1' data-question-id='block16_q0'  data-weight='1' data-pilar='Propósito' onchange='actualizarProgreso()'> Le dices que las redes son un buen lugar para conectar con comunidades de bienestar y encontrar apoyo en otras personas que persiguen objetivos similares.</label><br>
+</div>
+</div>
+<div class='question-block' id='block17' style='display: none;'>
+<h2>Percepción aspiracional</h2>
+<div class='question'><p><strong>Un usuario joven te dice que quiere rodearse de personas que piensen en grande sobre salud y longevidad, porque siente que en su entorno no encuentra esa motivación.</strong></p>
+<label><input type='radio' name='block17_q0' value='1' data-question-id='block17_q0'  data-weight='1' data-pilar='Social' onchange='actualizarProgreso()'> Le explicas que formar parte de VitalExtension le conecta con una comunidad de personas que aspiran a vivir más y mejor.</label><br><br>
+<label><input type='radio' name='block17_q0' value='1' data-question-id='block17_q0'  data-weight='1' data-pilar='Motivador-Visionario' onchange='actualizarProgreso()'> Le animas a que siga proyectos innovadores de longevidad que lo inspiren a proyectar su mejor versión.</label><br><br>
+<label><input type='radio' name='block17_q0' value='0' data-question-id='block17_q0'  data-weight='0' data-pilar='Distractor' onchange='actualizarProgreso()'> Le dices que debe conformarse con lo que hay y que no es necesario buscar un entorno motivador.</label><br><br>
+<label><input type='radio' name='block17_q0' value='1' data-question-id='block17_q0'  data-weight='1' data-pilar='Propósito' onchange='actualizarProgreso()'> Le cuentas que rodearse de personas con propósito refuerza la identidad y multiplica los resultados de cualquier esfuerzo personal.</label><br>
+</div>
+</div>
+
+  </div>
+
+  </form>
+
+  <div class="nav-buttons">
+    <button type="button" onclick="prevBlock()">Anterior</button>
+    <button type="button" onclick="nextBlock()">Siguiente</button>
+  </div>
+
+  
+<div id="emailScreen" class="hidden" style="text-align:center; margin-top: 30px;">
+    <h2>Para finalizar el Examen de Selección </h2>
+    <p>Indícanos el email con el que te postulaste en nuestra oferta de empleo</p>
+    
+    <p id="notaResultado" style="margin-top:8px;color:#555;">
+    Tu resultado psicométrico se mostrará en el <strong>siguiente paso</strong>, después de enviar tu email.
+  </p>  
+    <!-- Formulario para que el usuario ponga su nombre y su email -->
+    <input id="userName" placeholder="Tu nombre" type="text" style="padding: 10px; width: 70%; max-width: 300px; margin-bottom: 10px;"><br>
+    <input type="email" id="userEmail" placeholder="tu@email.com" style="padding: 10px; width: 70%; max-width: 300px;"><br><br>
+
+  <!-- Pais de residencia -->
+  <label for="pais">País de residencia:</label><br>
+  <select id="pais" name="pais" required>
+    <option value="">Seleccione su país...</option>
+    <option value="Argentina">Argentina</option>
+    <option value="Chile">Chile</option>
+    <option value="Colombia">Colombia</option>
+    <option value="EEUU">Colombia</option>
+    <option value="España">España</option>
+    <option value="México">México</option>
+    <option value="Panamá">Panamá</option>
+    <option value="Uruguay">España</option> 
+    <option value="Otro">Otro</option>
+  </select><br><br>
+
+  <!-- CAPTCHA -->
+    <div style="margin-top: 12px;">
+      <label id="captchaPregunta" style="font-size: 14px;">Cargando pregunta de seguridad...</label><br/>
+      <input id="captchaRespuesta" type="text" style="margin-top: 4px; width: 60px;" />
+    </div>
+
+  <!-- Honeypot -->
+    <input id="campoTrampa" type="text" autocomplete="off" style="display: none;" />
+
+  <!-- Checkbox RGPD -->
+    <div style="margin-top: 12px; font-size: 14px;">
+      <label for="consentimientoRGPD">
+        <input id="consentimientoRGPD" type="checkbox" />
+        Acepto la <a href="https://nrventurini.github.io/Pol-tica_privacidad/" target="_blank">política de privacidad</a>.
+      </label>
+    <p style="font-size: 13px; color: #555; margin-top: 8px;">
+    <span style="font-size: 15px;">⚖️ <strong>Compromiso VitalExtension</strong>:</span>
+    Jamás cederemos tu email ni enviaremos spam. Solo lo usaremos para continuar con el proceso de Selección.
+    </p>
+      </div>
+    <button id="btnEnviar" type="button" onclick="validarEmail()" aria-live="polite">
+      <span class="ve-spinner" aria-hidden="true"></span>
+      <span class="ve-btn-text">Enviar mi Examen</span>
+    </button>
+
+</div>
+
+  <div id="result" class="hidden">
+  </div>
+
+<script>
+// =====================
+//  LOGIC JS
+// =====================
+
+// --- ESTADO GLOBAL ---
+// Captcha global que comparten nextBlock() y validarEmail()
+let captchaActual = { pregunta: '', respuesta: '' };
+
+// Esta sección gestiona la navegación por bloques, la validación de respuestas,
+  const bloqueIds = ['block0', 'block1', 'block2', 'block3', 'block4', 'block5','block8', 'block9', 'block10', 'block11', 'block12', 'block13','block14','block15','block16','block17'];
+
+  // Índice del bloque actual que se está mostrando
+let currentBlock = 0;
+
+
+let __finished = false;
+
+  
+// Mostrar solo el bloque (pantalla) correspondiente al índice actual.
+// También se llama a actualizarProgreso() para mantener la barra de progreso sincronizada.
+function showBlock(index) {
+
+    bloqueIds.forEach((id, i) => {
+      const el = document.getElementById(id);
+    if (el) el.style.display = i === index ? 'block' : 'none';
+    });
+    //const percent = ((index + 1) / bloqueIds.length) * 100;  //Esto es para actualizar progreso según el número de preguntas respondidas, pero en este estes es por pantalla, por eso lo dejo desactivado
+    //document.getElementById("progressFill").style.width = percent + "%"; //Esto es para actualizar progreso según el número de preguntas respondidas, pero en este estes es por pantalla, por eso lo dejo desactivado
+    document.getElementById("progressText").textContent = "";
+  }
+
+  
+// Función que se ejecuta al pulsar "Siguiente".
+// Valida que todas las preguntas del bloque actual estén respondidas.
+
+function nextBlock() {
+  const block = document.getElementById(bloqueIds[currentBlock]);
+  const inputs = block.querySelectorAll('input');
+  for (let input of inputs) {
+    if (input.type === 'radio') {
+      const group = block.querySelectorAll(`input[name='${input.name}']`);
+      const isAnswered = Array.from(group).some(r => r.checked);
+      if (!isAnswered) { alert('Por favor, responde todas las preguntas antes de continuar.'); return; }
+    } else if (input.type === 'number' && !input.value) {
+      alert('Por favor, completa todos los campos numéricos.'); return;
+    }
+  }
+  if (currentBlock < bloqueIds.length - 1) {
+    currentBlock++;
+    showBlock(currentBlock);
+    actualizarProgreso();
+  } else {
+    try {
+      calcularResultados();
+    } catch (err) {
+      console.error("calcularResultados() falló:", err);
+      alert("Ocurrió un problema al generar tu resultado. Refresca la página e inténtalo nuevamente.");
+    }
+  }
+}
+  
+// Función que se ejecuta al pulsar "Anterior" para retroceder al bloque anterior.
+function prevBlock() {
+
+    if (currentBlock > 0) {
+      currentBlock--;
+      showBlock(currentBlock);
+    actualizarProgreso();
+    }
+  }
+
+  
+
+// Esta función actualiza la barra de progreso basada en preguntas individuales respondidas.
+// Cuenta los elementos únicos por su data-question-id y calcula el % completado.
+function actualizarProgreso() {
+  const preguntas = document.querySelectorAll('[data-question-id]');
+  const totalUnico = new Set([...preguntas].map(p => p.dataset.questionId)).size;
+
+  const respondidas = new Set();
+  preguntas.forEach(el => {
+    if (el.type === 'radio') {
+      const name = el.name;
+      if (document.querySelector(`input[name='${name}']:checked`)) {
+        respondidas.add(el.dataset.questionId);
+      }
+    } else if (el.type === 'number' && el.value) {
+      respondidas.add(el.dataset.questionId);
+    }
+  });
+
+  const completado = Math.round((respondidas.size / totalUnico) * 100);
+  const fill = document.getElementById("progressFill");
+  const text = document.getElementById("progressText");
+  fill.style.width = completado + "%";
+  text.textContent = completado + "% completado";
+}
+
+
+function setSendingState(isSending) {
+  const btn = document.getElementById('btnEnviar');
+  if (!btn) return;
+  const textEl = btn.querySelector('.ve-btn-text');
+
+  if (isSending) {
+    // guardar texto original y activar estilo
+    if (!btn.dataset.originalText) btn.dataset.originalText = textEl.textContent;
+    textEl.textContent = "ENVIANDO…";
+    btn.disabled = true;
+    btn.classList.add("sending");
+    btn.setAttribute("aria-busy", "true");
+  } else {
+    // restaurar
+    textEl.textContent = btn.dataset.originalText || "Enviar mi Examen";
+    btn.disabled = false;
+    btn.classList.remove("sending");
+    btn.removeAttribute("aria-busy");
+  }
+}
+
+
+// Validar email, RGPD, CAPTCHA, HONEYPOT, GOOGLESHEET antes de mostrar resultados finales
+function validarEmail() {
+  
+  const pais = document.getElementById("pais").value;
+  const name = document.getElementById("userName").value.trim();
+  const email = document.getElementById("userEmail").value.trim();
+  const captcha = document.getElementById("captchaRespuesta").value.trim();
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+   // ✅ Validar que el email está correcto
+  if (!regex.test(email)) {
+    alert("Por favor, introduce un email válido.");
+    return;
+  }
+
+  // ✅ Validar RGPD
+  if (!document.getElementById("consentimientoRGPD").checked) {
+    alert("Debes aceptar la política de privacidad para continuar.");
+    return;
+  }
+
+    // ✅ Validar honeypot
+  if (document.getElementById("campoTrampa").value !== "") {
+    alert("Detección de comportamiento automático.");
+    return;
+  }
+  
+  // ✅ Validar CAPTCHA
+      if (!captchaActual || captcha.trim() !== String(captchaActual.respuesta).trim()) {
+    alert("Respuesta incorrecta a la verificación. Intenta de nuevo.");
+    return;
+}
+
+    // Evitar doble clic + feedback visual
+    setSendingState(true);
+
+// ===== empaquetar resultados ampliados =====
+  const data = {
+    Nombre: name || "",
+    Email: email,
+    Origen: "Examen_Seleccion_VitalExtension",
+    pais: pais,
+
+
+    // Métrica de alineación y arquetipos
+    PuntuacionBruta: typeof window.__score === 'number' ? window.__score : 0,             // nº respuestas alineadas
+    TotalPreguntas: contarTotalPreguntas(),
+    PctAlineacion: typeof window.__pctAlineacion === 'number' ? window.__pctAlineacion : 0,
+
+    // Arquetipos
+    ArquetipoTop: window.__arquetipoTop || "",
+    ArquetipoSec1: window.__arquetipoSec1 || "",
+    ArquetipoSec2: window.__arquetipoSec2 || "",
+    PctTop: typeof window.__pctTop === "number" ? window.__pctTop : 0,
+    PctSec1: typeof window.__pctSec1 === "number" ? window.__pctSec1 : 0,
+    PctSec2: typeof window.__pctSec2 === "number" ? window.__pctSec2 : 0,
+
+    //Buckets (conteo por arquetipo)
+    BucketsJSON: JSON.stringify(window.__buckets || {}),
+
+    // Respuestas completas y clave (para futuros análisis de conversión/retención)
+    AllAnswersJSON: JSON.stringify(window.__allAnswers || []),
+    KeyAnswersJSON: JSON.stringify(window.__keyAnswers || []),
+
+    // Metadatos
+    DeviceTimeISO: new Date().toISOString(),
+    VersionTest: "v1.0" // útil si cambias pesos o copy en el tiempo
+  };
+
+
+
+
+// (Opcional) Verificar existencia de email
+// const yaExiste = await emailExisteEnSheet(email);
+// if (yaExiste) {
+//   alert("Este email ya ha realizado este Examen de Selección, y está en proceso de revisión");
+//   return;
+// }
+
+
+  // ✅ Enviar a Google Sheets. IMPORTANTE: enviarResultadosAGoogleSheets debe devolver Promise (return fetch(...))
+  enviarResultadosAGoogleSheets(data)
+      .then(() => {
+
+        // ocultar pantalla de email
+        document.getElementById("emailScreen").classList.add("hidden");
+
+        // construir e inyectar el HTML del resultado
+        const resDiv = document.getElementById("result");
+        resDiv.innerHTML = construirFeedbackHTML(
+          window.__pctAlineacion,
+          window.__buckets,
+          window.__arquetipoTop,
+          window.__arquetipoSec1,
+          window.__arquetipoSec2,
+          window.__pctTop,
+          window.__pctSec1,
+          window.__pctSec2
+        );
+
+        // Ocultar botones de navegación (está duplicado por seguridad aquí) para que nunca reaparezca si se renderiza algo asíncrono
+        __finished = true;
+        document.querySelector('.nav-buttons')?.classList.add('hidden');
+
+
+        // Mostrar el resultado
+        resDiv.classList.remove("hidden");
+      })
+      .catch(err => {
+        console.error("Fallo al enviar información:", err);
+        alert("Se produjo un problema al registrar tus datos. Por favor, reintenta.");
+        
+        // Rehabilita el botón si falla
+        setSendingState(false);
+      });
+    
+}
+
+function enviarResultadosAGoogleSheets(data) {
+  const formData = new FormData();
+  for (const key in data) formData.append(key, data[key]);
+
+  // DEVOLVER la promesa:
+  return fetch("https://script.google.com/macros/s/AKfycbxiG6oK4N_KJ6p6t9vjfEe82Z-RNl77-doyQg4SHv630Jyr3bl6uXPlcMXjnIUhXZRv/exec", {
+    method: "POST",
+    body: formData
+  })
+  .then(response => {
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.text();
+  });
+  // (sin .catch; lo captura validarEmail)
+}
+
+// ======== 1) NORMALIZACIÓN DE PILARES Y TEXTOS ========
+const PILAR_MAP = {
+  // Empático–Comunidad
+  "Empático":"Empático","Emocional":"Empático","Social":"Empático","Emocional-Social":"Empático",
+  // Científico–Analítico
+  "Científico":"Científico","Analítico":"Científico","Experto":"Científico","Educador":"Científico",
+  "Racional-Científico":"Científico","Ingeniería":"Científico","Ético":"Científico",
+  // Pragmático–Operativo
+  "Pragmático":"Pragmático","Práctico":"Pragmático","Emocional-Práctico":"Pragmático",
+  "Pedagógico":"Pragmático","Mediador":"Pragmático","Directo":"Pragmático",
+  // Propósito–Visión
+  "Propósito":"Propósito","Cultural-Inspirador":"Propósito","Motivador-Visionario":"Propósito",
+  // Distractor
+  "Distractor":"Distractor"
+};
+
+const PILAR_PRETTY = {
+  "Empático":"Empático–Comunidad",
+  "Científico":"Científico–Analítico",
+  "Pragmático":"Pragmático–Operativo",
+  "Propósito":"Propósito–Visión"
+};
+
+const FEEDBACK_TXT = {
+  "Empático": {
+    titulo: "Perfil Empático–Comunidad",
+    cuerpo: "Priorizas la escucha y el acompañamiento humano. Creas confianza y sostienes la adherencia con cercanía.",
+    fortalezas: "Trato humano, motivación, adherencia.",
+    potenciar: "Protocolos claros y herramientas digitales sencillas."
+  },
+  "Científico": {
+    titulo: "Perfil Científico–Analítico",
+    cuerpo: "Buscas evidencia y claridad. Traduces información compleja en decisiones informadas.",
+    fortalezas: "Credibilidad, rigor, educación del paciente.",
+    potenciar: "Materiales basados en estudios en humanos y guías de comunicación clara."
+  },
+  "Pragmático": {
+    titulo: "Perfil Pragmático–Operativo",
+    cuerpo: "Te orientas a soluciones paso a paso, con foco en resultados medibles.",
+    fortalezas: "Resolución de problemas, micro-hábitos, eficiencia.",
+    potenciar: "Checklists, metas SMART y seguimiento con métricas simples."
+  },
+  "Propósito": {
+    titulo: "Perfil Propósito–Visión",
+    cuerpo: "Te mueve el impacto y el sentido. Inspiras conectando salud con propósito y comunidad.",
+    fortalezas: "Inspiración, liderazgo informal, activación de comunidad.",
+    potenciar: "Espacios de comunidad y proyectos con misión clara."
+  }
+};
+
+// Preguntas clave a trazar
+const KEY_QUESTIONS = [
+  "block2_q0",   // Expectativas (realismo/adhesión)
+  "block8_q0",   // Datos & privacidad (confianza/ética)
+  "block14_q0",  // Precio vs valor (objeciones)
+  "block15_q0",  // Inversión en salud (micro-compromiso)
+  "block16_q0"   // Redes sociales (comunidad/CTA)
+];
+
+
+// ======== 2) RESULTADO COMPUESTO: % ALINEACIÓN + ARQUETIPO. Calcula y guarda, pero NO los muestra========
+
+function calcularResultados() {
+
+  // 1) Recoger respuestas marcadas
+  const seleccionadas = Array.from(document.querySelectorAll("input[type='radio']:checked"));
+
+  // 2) % de alineación con la visión (value=1)
+  const totalPreguntas = new Set(seleccionadas.map(r => r.dataset.questionId)).size || contarTotalPreguntas();
+  const alineadas = seleccionadas.filter(r => parseInt(r.value,10) === 1).length;
+  const pctAlineacion = Math.round((alineadas / totalPreguntas) * 100);
+
+  // 3) Conteo por arquetipo normalizado (solo en respuestas alineadas)
+  const buckets = { Empático:0, Científico:0, Pragmático:0, Propósito:0, Distractor:0 };
+  seleccionadas.forEach(r => {
+    const raw = r.dataset.pilar || "";
+    const norm = PILAR_MAP[raw] || "Pragmático";
+    if (parseInt(r.value,10) === 1) {
+      buckets[norm] = (buckets[norm] || 0) + 1;
+    } else {
+      buckets["Distractor"]++;
+    }
+  });
+
+  // 4) Determinar top y secundarios (desempate: Empático > Pragmático > Científico > Propósito)
+  const ordenPreferencia = ["Empático","Pragmático","Científico","Propósito"];
+  const ranking = Object.entries(buckets)
+    .filter(([k]) => k !== "Distractor")
+    .sort((a,b) => b[1]-a[1] || ordenPreferencia.indexOf(a[0]) - ordenPreferencia.indexOf(b[0]));
+
+  const top = ranking[0]?.[0] || "Empático";
+  const sec1 = ranking[1]?.[0] || null;
+  const sec2 = ranking[2]?.[0] || null;
+
+  // 5) % normalizados por arquetipo (solo sobre respuestas alineadas)
+  const totalAlineadas = ranking.reduce((acc, [,v]) => acc + v, 0);
+  const pctBy = (k) => totalAlineadas > 0 ? Math.round((buckets[k] / totalAlineadas) * 100) : 0;
+
+  const pctTop = pctBy(top);
+  const pctSec1 = sec1 ? pctBy(sec1) : 0;
+  const pctSec2 = sec2 ? pctBy(sec2) : 0;
+
+  // 6) Guardar en memoria global para usar tras enviar el email
+  window.__score = alineadas;
+  window.__pctAlineacion = pctAlineacion;
+  window.__buckets = buckets;
+  window.__arquetipoTop = top;
+  window.__arquetipoSec1 = sec1;
+  window.__arquetipoSec2 = sec2;
+  window.__pctTop = pctTop;
+  window.__pctSec1 = pctSec1;
+  window.__pctSec2 = pctSec2;
+
+  // Trazabilidad: respuestas completas y clave
+  const { allAnswers, keyAnswers } = recolectarRespuestasSeleccionadas(seleccionadas);
+  window.__allAnswers = allAnswers;
+  window.__keyAnswers = keyAnswers;
+
+  // 7) Al terminar el cuestionario: esconder test y mostrar SOLO pantalla de email
+  document.getElementById('quizForm').classList.add('hidden');
+
+  const nav = document.querySelector('.nav-buttons');
+  if (nav) nav.classList.add('hidden');   // ← oculta Siguiente/Atrás al entrar al email
+ 
+  document.getElementById('emailScreen').classList.remove('hidden');
+
+  __finished = true;
+
+
+
+  // 8) Generar/actualizar CAPTCHA como ya hacías
+  const preguntasCaptcha = [
+    { pregunta: "Pregunta de seguridad: ¿Cuánto es 3 + 5?", respuesta: "8" },
+    { pregunta: "Pregunta de seguridad: ¿Cuánto es 6 - 2?", respuesta: "4" },
+    { pregunta: "Pregunta de seguridad: ¿Cuánto es 1 + 2?", respuesta: "3" },
+    { pregunta: "Pregunta de seguridad: ¿Cuánto es 3 + 2?", respuesta: "5" },
+    { pregunta: "Pregunta de seguridad: ¿Cuánto es 5 + 2?", respuesta: "7" },
+    { pregunta: "Pregunta de seguridad: ¿Cuánto es 7 + 2?", respuesta: "9" },
+    { pregunta: "Pregunta de seguridad: ¿Cuánto es 2 x 1?", respuesta: "2" },
+    { pregunta: "Pregunta de seguridad: ¿Cuánto es 3 - 2?", respuesta: "1" },
+    { pregunta: "Pregunta de seguridad: ¿Cuánto es 3 + 3?", respuesta: "6" },
+    { pregunta: "Pregunta de seguridad: ¿Cuánto es 10 - 5?", respuesta: "5" }
+  ];
+  captchaActual = preguntasCaptcha[Math.floor(Math.random() * preguntasCaptcha.length)];
+  document.getElementById("captchaPregunta").textContent = captchaActual.pregunta;
+}
+
+
+// helpers
+function contarTotalPreguntas(){
+  const radios = Array.from(document.querySelectorAll("input[type='radio'][data-question-id]"));
+  return new Set(radios.map(r => r.dataset.questionId)).size;
+}
+
+function construirFeedbackHTML(pct, buckets, top, sec1, sec2, pctTop=0, pctSec1=0, pctSec2=0) {
+  const f = FEEDBACK_TXT[top];
+  const prettyTop = PILAR_PRETTY[top] || top;
+  const secTxt = [sec1, sec2].filter(Boolean).map(x => PILAR_PRETTY[x]||x);
+
+  return `
+  <div style="text-align:center; margin-top: 24px;">
+    <p style="max-width:700px;margin:0 auto 12px;color:#444;">
+      Este examen no solo era una prueba de selección: cada escenario estaba diseñado para mostrar cómo piensas frente a retos reales.
+      Entre las opciones, algunas no estaban alineadas con nuestros valores y otras nos han permitido vislumbrar tu <strong>arquetipo psicológico</strong> dentro de nuestra comunidad.
+    </p>
+    <h2>✨ Resultado de tu Examen</h2>
+    <p style="font-size:16px; margin-top:8px;">
+      <strong>Alineación con la visión:</strong> ${pct}%<br/>
+      <strong>Arquetipo dominante:</strong> ${prettyTop} <span style="color:#777;">(${pctTop}%)</span><br/>
+      ${
+        secTxt.length
+          ? `<strong>Secundarios:</strong> ${secTxt[0]} (${pctSec1}%)${secTxt[1] ? ` · ${secTxt[1]} (${pctSec2}%)` : ``}`
+          : ``
+      }
+    </p>
+
+    <div style="max-width:680px;margin:16px auto;text-align:left;border:1px solid #eee;border-radius:10px;padding:16px;">
+      <h3 style="margin-top:0;">${f.titulo}</h3>
+      <p>${f.cuerpo}</p>
+      <p><strong>Fortalezas en el rol:</strong> ${f.fortalezas}</p>
+      <p><strong>Cómo potenciarte:</strong> ${f.potenciar}</p>
+      <p style="font-size:12px;color:#666;margin-top:8px;">Este resultado es orientativo; nos ayuda a entender tu forma de acompañar a las personas. En la próxima fase veremos cómo encaja con el equipo.</p>
+    </div>
+
+    <hr style="margin:24px 0;"/>
+    <p>
+      Nuestra comunidad comparte <strong>biohacks, historias y descubrimientos</strong> para vivir más y mejor.
+      Únete a <a href="https://www.instagram.com/vitalextension" target="_blank" style="color:#4caf50;font-weight:bold;">Instagram</a>.
+    </p>
+
+    <div id="ctaRedes" style="margin-top: 20px; text-align: center;">
+      <p>Síguenos en redes sociales:</p>
+      <a href="https://www.instagram.com/vitalextension" target="_blank" style="margin: 0 10px;">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" 
+            alt="Instagram" width="40" height="40" style="fill:#E1306C;">
+      </a>
+      <a href="https://www.facebook.com/vitalextension" target="_blank" style="margin: 0 10px;">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" 
+            alt="Facebook" width="40" height="40" style="fill:#1877F2;">
+      </a>
+    </div>
+
+
+  </div>`;
+}
+
+
+function recolectarRespuestasSeleccionadas(seleccionadas){
+  // allAnswers: listado completo de {qid, value, pilarRaw, pilar, texto}
+  const allAnswers = seleccionadas.map(r => {
+    const label = r.closest("label");
+    const texto = label ? label.textContent.trim() : "";
+    const raw = r.dataset.pilar || "";
+    const pilar = PILAR_MAP[raw] || raw;
+    return {
+      qid: r.dataset.questionId,
+      value: parseInt(r.value,10) || 0,
+      pilarRaw: raw,
+      pilar,
+      texto
+    };
+  });
+
+  // keyAnswers: solo preguntas clave (para correlacionar más tarde)
+  const keyAnswers = allAnswers.filter(a => KEY_QUESTIONS.includes(a.qid));
+
+  return { allAnswers, keyAnswers };
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  showBlock(currentBlock);     // muestra el primer bloque
+  actualizarProgreso();        // sincroniza la barra
+});
+</script>
+</body>
+</html>
