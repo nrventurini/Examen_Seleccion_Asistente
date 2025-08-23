@@ -13,7 +13,7 @@
     .progress-bar { height: 20px; background: #ddd; border-radius: 10px; margin-bottom: 20px; }
     .progress-fill { height: 100%; width: 0%; background: #4caf50; transition: width 0.3s; }
     .question-block { margin-bottom: 30px; }
-    .hidden { display: none; }
+    
     button { background: #4caf50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
     .nav-buttons { display: flex; justify-content: space-between; }
 
@@ -47,6 +47,12 @@
       animation: ve-spin 0.7s linear infinite;
     }
 
+    /* Mostrar en la tarejta de resultados la motivación del individuo en adherirse a mejorar sus hábitos*/    
+    .ve-meter{ width:100%; height:10px; background:#eee; border-radius:6px; overflow:hidden; margin-top:6px; }
+    .ve-meter-fill{ height:100%; width:0; background:#4caf50; transition:width .5s ease; border-radius:6px; }
+
+
+
     /* Oculto por defecto dentro del botón */
     #btnEnviar .ve-spinner { display: none; }
 
@@ -55,12 +61,157 @@
     @keyframes ve-spin {
       to { transform: rotate(360deg); }
     }
+
+
+  /* Tarjeta de resultado más clara y jerárquica */
+  .ve-result-card {
+    max-width: 720px;
+    margin: 16px auto;
+    text-align: left;
+    border: 1px solid #e9e9e9;
+    border-radius: 12px;
+    padding: 18px 20px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  }
+
+  .ve-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+    gap: 8px 16px;
+    margin-top: 10px;
+  }
+
+  .ve-kpi {
+    background: #f8fbf8;
+    border: 1px solid #e7f3e7;
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+
+  .ve-badge {
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:999px;
+    background:#e8f5e9;
+    color:#2e7d32;
+    font-weight:600;
+    font-size:12px;
+  }
+
+  .ve-subtle { color:#666; font-size:12px; }
+
+
   </style>
 
 
 </head>
 <body>
-<div class="container">
+
+  <div id="oportunidades" style="max-width:700px;margin:40px auto;font-family:Arial,sans-serif;">
+    <h2 style="text-align:center;color:#333;">OPORTUNIDADES ABIERTAS</h2>
+
+  <!-- Botón para mostrar la oferta -->
+  <button onclick="toggleJob()" style="width:100%;padding:15px;font-size:18px;
+          background-color:#4caf50;color:white;border:none;border-radius:8px;cursor:pointer;">
+    Asistente de Bienestar en Clínica de Longevidad
+  </button>
+
+  <!-- Contenedor oculto que se despliega -->
+  <div id="jobDetails" style="display:none;margin-top:20px;border:1px solid #ccc;
+        border-radius:8px;padding:20px;">
+
+    <h3 style="margin-top:0;color:#444;">Descripción del puesto</h3>
+    <p>
+    En <strong>VitalExtension</strong>, buscamos a una persona con <strong>calidez, empatía y vocación de servicio</strong> para acompañar a
+    nuestros usuarios en su experiencia de salud personalizada. Si te mueve el propósito y te ilusiona
+    trabajar donde <em>ciencia, innovación y humanidad</em> se encuentran, este rol es para ti.
+  </p>
+
+  <h4>Lo que harás</h4>
+  <ul>
+    <li>Ser el <strong>primer contacto humano</strong> de la clínica, transmitiendo cercanía y confianza.</li>
+    <li><strong>Acompañar</strong> al paciente en su recorrido por la clínica y la plataforma digital.</li>
+    <li>Apoyar la <strong>gestión de agendas médicas</strong> y la telemedicina (<strong>VitalCare</strong>).</li>
+    <li>Favorecer una experiencia <strong>humana, empática y de confianza</strong> en cada interacción.</li>
+    <li>Resolver dudas con el uso de la plataforma, productos y servicios.</li>
+    <li>Recoger <strong>feedback</strong> clave para mejorar continuamente la experiencia del paciente.</li>
+    <li>Proponer ideas que sorprendan y cuiden mejor a nuestra comunidad.</li>
+  </ul>
+
+  <h4>Lo que ofrecemos</h4>
+  <ul>
+    <li>Trabajo <strong>100&nbsp;% remoto</strong>.</li>
+    <li><strong>Horario flexible</strong> para equilibrar vida y trabajo.</li>
+    <li><strong>Formación gratuita</strong> en longevidad, biomarcadores y salud de precisión.</li>
+    <li>Cultura sin estrés, con <strong>bienestar real</strong> y trabajo significativo.</li>
+    <li>Proyecto con <strong>propósito</strong>: ayudar a otros mientras tú también creces.</li>
+  </ul>
+
+  <p>
+    Si has sido pre-seleccionado/a en Indeed o InfoJobs, por favor confirma tu estado para continuar:
+  </p>
+
+    <!-- Casilla de confirmación -->
+    <label style="display:block;margin:15px 0;">
+      <input type="checkbox" id="confirmBox" onchange="toggleNextBtn()"> 
+      Confirmo que he sido pre-seleccionado/a para este puesto de empleo
+    </label>
+
+    <!-- Botón siguiente -->
+    <button id="nextBtn" disabled onclick="empezarCuestionario()" style="padding:12px 20px;font-size:16px;
+        background-color:#bbb;color:#fff;border:none;border-radius:6px;cursor:not-allowed;">
+      Siguiente
+    </button>
+  </div>
+</div>
+
+<script>
+  function toggleJob() {
+    const job = document.getElementById('jobDetails');
+    job.style.display = job.style.display === "none" ? "block" : "none";
+  }
+
+  function toggleNextBtn() {
+    const check = document.getElementById('confirmBox').checked;
+    const btn = document.getElementById('nextBtn');
+    if(check){
+      btn.disabled = false;
+      btn.style.backgroundColor = "#4caf50";
+      btn.style.cursor = "pointer";
+    } else {
+      btn.disabled = true;
+      btn.style.backgroundColor = "#bbb";
+      btn.style.cursor = "not-allowed";
+    }
+  }
+  function empezarCuestionario() {
+  // Oculta oportunidades
+  document.getElementById('oportunidades')?.classList.add('hidden');
+
+  // Muestra cuestionario y navegación
+  document.querySelector('.container')?.classList.remove('hidden');
+  document.querySelector('.nav-buttons')?.classList.remove('hidden');
+
+  // Sitúa el test en el primer bloque y sincroniza progreso
+  currentBlock = 0;
+  showBlock(currentBlock);
+  actualizarProgreso();
+
+  // Lleva al usuario al inicio del contenedor
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+
+</script>
+
+
+
+
+
+
+<div class="container hidden">
   <h1>Cuestionario de segmentación de perfiles</h1>
   <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 <p id="progressText" style="text-align:right; font-weight:bold;"></p>
@@ -71,7 +222,7 @@
 <div class='question'><p>Este cuestionario no busca medir tus conocimientos teóricos, sino tu manera de pensar y de actuar frente a situaciones reales.</p>
 <p>Encontrarás 15 casos prácticos relacionados con la misión de VitalExtension: acercar la medicina de precisión y la longevidad a todas las personas, de forma humana, accesible y científica.</p>
 <p>No existen respuestas correctas o incorrectas. Cada opción refleja un estilo distinto de afrontar los retos. ¡Consejo!: Responde de manera sincera la alternativa que más haya resonado contigo, sin darle más vueltas.</p>
-<p>Tómate tu tiempo (sólo lo puedes hacer 1 vez). Este test no solo nos ayuda a conocerte mejor, también te permitirá descubrir cómo encajan tus valores con nuestra visión de transformar la salud y la vitalidad en la era digital.</p>
+<p>Busca un lugar cómodo y tranquilo, ya que sólo puedes hacer este test 1 vez. Este test no solo nos ayuda a conocerte mejor, también te permitirá descubrir cómo encajan tus valores con nuestra visión de transformar la salud y la vitalidad en la era digital.</p>
 <p>👉 Duración aproximada: 6 minutos.</p>
 </div>
 </div>
@@ -210,12 +361,25 @@
 <label><input type='radio' name='block17_q0' value='1' data-question-id='block17_q0'  data-weight='1' data-pilar='Propósito' onchange='actualizarProgreso()'> Le cuentas que rodearse de personas con propósito refuerza la identidad y multiplica los resultados de cualquier esfuerzo personal.</label><br>
 </div>
 </div>
-
+<div class='question-block' id='block18' style='display: none;'>
+  <h2>Tu interés personal en la salud</h2>
+  <div class='question'>
+    <p><strong>
+      Para acompañar a otros en su camino, primero debemos recorrer el nuestro. Esta experiencia personal es la que convierte cada conversación con nuestros usuarios en un consejo auténtico y cercano.  
+      ¿Cuánto interés genuino sientes en mejorar tu propia salud y en probar los protocolos y servicios de VitalExtension?
+    </strong></p>
+    
+    <label><input type='radio' name='block18_q0' value='1' data-question-id='block18_q0' data-noalign='true' data-pilar='Distractor' onchange='actualizarProgreso()'> 1 – Nada interesado/a</label><br><br>
+    <label><input type='radio' name='block18_q0' value='2' data-question-id='block18_q0' data-noalign='true' data-pilar='Distractor' onchange='actualizarProgreso()'> 2 – Poco interesado/a</label><br><br>
+    <label><input type='radio' name='block18_q0' value='3' data-question-id='block18_q0' data-noalign='true' data-pilar='Emocional' onchange='actualizarProgreso()'> 3 – Moderadamente interesado/a</label><br><br>
+    <label><input type='radio' name='block18_q0' value='4' data-question-id='block18_q0' data-noalign='true' data-pilar='Propósito' onchange='actualizarProgreso()'> 4 – Muy interesado/a</label><br><br>
+    <label><input type='radio' name='block18_q0' value='5' data-question-id='block18_q0' data-noalign='true' data-pilar='Propósito' onchange='actualizarProgreso()'> 5 – Completamente interesado/a</label><br>
+  </div>
+</div>
   </div>
 
   </form>
-
-  <div class="nav-buttons">
+  <div class="nav-buttons hidden">
     <button type="button" onclick="prevBlock()">Anterior</button>
     <button type="button" onclick="nextBlock()">Siguiente</button>
   </div>
@@ -238,12 +402,12 @@
     <option value="">Seleccione su país...</option>
     <option value="Argentina">Argentina</option>
     <option value="Chile">Chile</option>
-    <option value="Colombia">Colombia</option>
-    <option value="EEUU">Colombia</option>
+    <option value="Colombia">Colombia</option> 
+    <option value="EEUU">EEUU</option>
     <option value="España">España</option>
     <option value="México">México</option>
     <option value="Panamá">Panamá</option>
-    <option value="Uruguay">España</option> 
+    <option value="Uruguay">Uruguay</option> 
     <option value="Otro">Otro</option>
   </select><br><br>
 
@@ -287,7 +451,7 @@
 let captchaActual = { pregunta: '', respuesta: '' };
 
 // Esta sección gestiona la navegación por bloques, la validación de respuestas,
-  const bloqueIds = ['block0', 'block1', 'block2', 'block3', 'block4', 'block5','block8', 'block9', 'block10', 'block11', 'block12', 'block13','block14','block15','block16','block17'];
+  const bloqueIds = ['block0', 'block1', 'block2', 'block3', 'block4', 'block5','block8', 'block9', 'block10', 'block11', 'block12', 'block13','block14','block15','block16','block17','block18'];
 
   // Índice del bloque actual que se está mostrando
 let currentBlock = 0;
@@ -314,6 +478,7 @@ function showBlock(index) {
 // Valida que todas las preguntas del bloque actual estén respondidas.
 
 function nextBlock() {
+  if (__finished) return; // ⬅️ bloquea navegación tras finalizar el test (aunque ya los ocultamos, esto evita estados extraños si alguien triggera eventos vía teclado)
   const block = document.getElementById(bloqueIds[currentBlock]);
   const inputs = block.querySelectorAll('input');
   for (let input of inputs) {
@@ -341,7 +506,7 @@ function nextBlock() {
   
 // Función que se ejecuta al pulsar "Anterior" para retroceder al bloque anterior.
 function prevBlock() {
-
+  if (__finished) return; // ⬅️ bloquea navegación tras finalizar el test (aunque ya los ocultamos, esto evita estados extraños si alguien triggera eventos vía teclado)
     if (currentBlock > 0) {
       currentBlock--;
       showBlock(currentBlock);
@@ -414,6 +579,13 @@ function validarEmail() {
     return;
   }
 
+  // ✅ Validar que el país está seleccionado
+    if (!pais) {
+    alert("Por favor, selecciona tu país de residencia.");
+    return;
+  } 
+
+
   // ✅ Validar RGPD
   if (!document.getElementById("consentimientoRGPD").checked) {
     alert("Debes aceptar la política de privacidad para continuar.");
@@ -443,10 +615,15 @@ function validarEmail() {
     pais: pais,
 
 
-    // Métrica de alineación y arquetipos
+    // Métrica de alineación visión y arquetipos
     PuntuacionBruta: typeof window.__score === 'number' ? window.__score : 0,             // nº respuestas alineadas
     TotalPreguntas: contarTotalPreguntas(),
     PctAlineacion: typeof window.__pctAlineacion === 'number' ? window.__pctAlineacion : 0,
+
+    // Métrica de motivación para adherirse a mejorar salud
+    InteresPersonal: typeof window.__interesPersonal === 'number' ? window.__interesPersonal : '',
+    InteresPersonalPct: typeof window.__interesPersonalPct === 'number' ? window.__interesPersonalPct : '',
+
 
     // Arquetipos
     ArquetipoTop: window.__arquetipoTop || "",
@@ -539,7 +716,7 @@ const PILAR_MAP = {
   "Empático":"Empático","Emocional":"Empático","Social":"Empático","Emocional-Social":"Empático",
   // Científico–Analítico
   "Científico":"Científico","Analítico":"Científico","Experto":"Científico","Educador":"Científico",
-  "Racional-Científico":"Científico","Ingeniería":"Científico","Ético":"Científico",
+  "Racional-Científico":"Científico","Ingeniería":"Científico","Ético":"Científico", "Racional-Económico":"Científico",
   // Pragmático–Operativo
   "Pragmático":"Pragmático","Práctico":"Pragmático","Emocional-Práctico":"Pragmático",
   "Pedagógico":"Pragmático","Mediador":"Pragmático","Directo":"Pragmático",
@@ -601,13 +778,14 @@ function calcularResultados() {
   const seleccionadas = Array.from(document.querySelectorAll("input[type='radio']:checked"));
 
   // 2) % de alineación con la visión (value=1)
+  const alineadas = seleccionadas.filter(r => r.dataset.noalign !== 'true' && parseInt(r.value,10) === 1).length; //⬅️ Aquí tengo en cuenta que se ignore la pregunta que tiene como noalign === True
   const totalPreguntas = new Set(seleccionadas.map(r => r.dataset.questionId)).size || contarTotalPreguntas();
-  const alineadas = seleccionadas.filter(r => parseInt(r.value,10) === 1).length;
   const pctAlineacion = Math.round((alineadas / totalPreguntas) * 100);
 
   // 3) Conteo por arquetipo normalizado (solo en respuestas alineadas)
   const buckets = { Empático:0, Científico:0, Pragmático:0, Propósito:0, Distractor:0 };
   seleccionadas.forEach(r => {
+    if (r.dataset.noalign === 'true') return; // ⬅️ Lo utilizo para ignorar del conteo las pregutnas que tienen el noalign ===true
     const raw = r.dataset.pilar || "";
     const norm = PILAR_MAP[raw] || "Pragmático";
     if (parseInt(r.value,10) === 1) {
@@ -635,6 +813,17 @@ function calcularResultados() {
   const pctSec1 = sec1 ? pctBy(sec1) : 0;
   const pctSec2 = sec2 ? pctBy(sec2) : 0;
 
+
+// Motivación personal en adherirse a hábitos saludables (block18)
+let interesPersonal = null;
+let interesPersonalPct = null;
+const selInteres = document.querySelector("input[name='block18_q0']:checked");
+if (selInteres) {
+  interesPersonal = parseInt(selInteres.value,10);           // 1..5
+  interesPersonalPct = Math.round(((interesPersonal - 1) / 4) * 100); // 0..100
+}
+
+
   // 6) Guardar en memoria global para usar tras enviar el email
   window.__score = alineadas;
   window.__pctAlineacion = pctAlineacion;
@@ -645,6 +834,8 @@ function calcularResultados() {
   window.__pctTop = pctTop;
   window.__pctSec1 = pctSec1;
   window.__pctSec2 = pctSec2;
+  window.__interesPersonal = interesPersonal;
+  window.__interesPersonalPct = interesPersonalPct;
 
   // Trazabilidad: respuestas completas y clave
   const { allAnswers, keyAnswers } = recolectarRespuestasSeleccionadas(seleccionadas);
@@ -693,49 +884,80 @@ function construirFeedbackHTML(pct, buckets, top, sec1, sec2, pctTop=0, pctSec1=
   const secTxt = [sec1, sec2].filter(Boolean).map(x => PILAR_PRETTY[x]||x);
 
   return `
-  <div style="text-align:center; margin-top: 24px;">
+  <div style="text-align:center; margin-top: 22px;">
+    <h2 style="margin-bottom:6px;">✨ Resultado de tu Examen</h2>
     <p style="max-width:700px;margin:0 auto 12px;color:#444;">
-      Este examen no solo era una prueba de selección: cada escenario estaba diseñado para mostrar cómo piensas frente a retos reales.
-      Entre las opciones, algunas no estaban alineadas con nuestros valores y otras nos han permitido vislumbrar tu <strong>arquetipo psicológico</strong> dentro de nuestra comunidad.
-    </p>
-    <h2>✨ Resultado de tu Examen</h2>
-    <p style="font-size:16px; margin-top:8px;">
-      <strong>Alineación con la visión:</strong> ${pct}%<br/>
-      <strong>Arquetipo dominante:</strong> ${prettyTop} <span style="color:#777;">(${pctTop}%)</span><br/>
-      ${
-        secTxt.length
-          ? `<strong>Secundarios:</strong> ${secTxt[0]} (${pctSec1}%)${secTxt[1] ? ` · ${secTxt[1]} (${pctSec2}%)` : ``}`
-          : ``
-      }
+      Este examen forma parte de nuestro proceso de selección basado en escenarios reales.
+      Algunas opciones no estaban alineadas con nuestros valores; otras nos ayudan a
+      perfilar tu <strong>estilo de acompañamiento</strong>.
     </p>
 
-    <div style="max-width:680px;margin:16px auto;text-align:left;border:1px solid #eee;border-radius:10px;padding:16px;">
+    <div class="ve-kpis">
+      <div class="ve-kpi">
+        <div class="ve-badge">Alineación con la visión</div>
+        <div style="font-size:22px;font-weight:700;margin-top:6px;">${pct}%</div>
+        <div class="ve-subtle">Suma de respuestas alineadas con nuestros principios</div>
+      </div>
+
+      <div class="ve-kpi">
+        <div class="ve-badge">Arquetipo dominante</div>
+        <div style="font-size:18px;font-weight:700;margin-top:6px;">
+          ${prettyTop} <span class="ve-subtle">(${pctTop}%)</span>
+        </div>
+        ${
+          secTxt.length
+          ? `<div class="ve-subtle" style="margin-top:4px;">
+               Secundarios: ${secTxt[0]} (${pctSec1}%)${secTxt[1] ? ` · ${secTxt[1]} (${pctSec2}%)` : ``}
+             </div>`
+          : ``
+        }
+      </div>
+
+      ${
+        (typeof window.__interesPersonalPct === 'number')
+        ? `
+        <div class="ve-kpi">
+          <div class="ve-badge">Interés personal en salud</div>
+          <div style="margin-top:6px;">
+            <strong>${window.__interesPersonal}/5</strong> (${window.__interesPersonalPct}%)
+            <div class="ve-meter" aria-label="Nivel de interés personal" style="margin-top:6px;">
+              <div class="ve-meter-fill" style="width:${window.__interesPersonalPct}%"></div>
+            </div>
+            <div class="ve-subtle" style="margin-top:6px;">
+              Autoevaluación para entender tu motivación de adherencia.
+            </div>
+          </div>
+        </div>`
+        : ``
+      }
+    </div>
+
+    <div class="ve-result-card">
       <h3 style="margin-top:0;">${f.titulo}</h3>
       <p>${f.cuerpo}</p>
       <p><strong>Fortalezas en el rol:</strong> ${f.fortalezas}</p>
       <p><strong>Cómo potenciarte:</strong> ${f.potenciar}</p>
-      <p style="font-size:12px;color:#666;margin-top:8px;">Este resultado es orientativo; nos ayuda a entender tu forma de acompañar a las personas. En la próxima fase veremos cómo encaja con el equipo.</p>
+      <p class="ve-subtle" style="margin-top:8px;">
+        Resultado orientativo y no clínico. Nos ayuda a entender tu forma de acompañar a las personas.
+        En la siguiente fase validaremos el encaje con el equipo.
+      </p>
     </div>
 
-    <hr style="margin:24px 0;"/>
-    <p>
+    <p style="margin-top:18px;">
       Nuestra comunidad comparte <strong>biohacks, historias y descubrimientos</strong> para vivir más y mejor.
       Únete a <a href="https://www.instagram.com/vitalextension" target="_blank" style="color:#4caf50;font-weight:bold;">Instagram</a>.
     </p>
 
-    <div id="ctaRedes" style="margin-top: 20px; text-align: center;">
-      <p>Síguenos en redes sociales:</p>
+    <div id="ctaRedes" style="margin-top: 12px; text-align: center;">
       <a href="https://www.instagram.com/vitalextension" target="_blank" style="margin: 0 10px;">
-        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" 
-            alt="Instagram" width="40" height="40" style="fill:#E1306C;">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg"
+             alt="Instagram" width="40" height="40">
       </a>
       <a href="https://www.facebook.com/vitalextension" target="_blank" style="margin: 0 10px;">
-        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" 
-            alt="Facebook" width="40" height="40" style="fill:#1877F2;">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg"
+             alt="Facebook" width="40" height="40">
       </a>
     </div>
-
-
   </div>`;
 }
 
