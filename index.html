@@ -101,6 +101,25 @@
 
   .ve-subtle { color:#666; font-size:12px; }
 
+    button.btn-start {
+  display: inline-block;
+  background: #4caf50;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  transition: background 0.2s, transform 0.1s;
+}
+
+button.btn-start:hover {
+  background: #43a047;
+  transform: scale(1.02);
+}
+
 
   </style>
 
@@ -112,9 +131,8 @@
     <h2 style="text-align:center;color:#333;">OPORTUNIDADES ABIERTAS</h2>
 
   <!-- Botón para mostrar la oferta -->
-  <button onclick="toggleJob()" style="width:100%;padding:15px;font-size:18px;
-          background-color:#4caf50;color:white;border:none;border-radius:8px;cursor:pointer;">
-    Asistente de Bienestar en Clínica de Longevidad
+  <button onclick="toggleJob()" class="btn-start" style="width:100%;">
+  👉 Asistente de Bienestar en Clínica de Longevidad
   </button>
 
   <!-- Contenedor oculto que se despliega -->
@@ -468,9 +486,7 @@ function showBlock(index) {
       const el = document.getElementById(id);
     if (el) el.style.display = i === index ? 'block' : 'none';
     });
-    //const percent = ((index + 1) / bloqueIds.length) * 100;  //Esto es para actualizar progreso según el número de preguntas respondidas, pero en este estes es por pantalla, por eso lo dejo desactivado
-    //document.getElementById("progressFill").style.width = percent + "%"; //Esto es para actualizar progreso según el número de preguntas respondidas, pero en este estes es por pantalla, por eso lo dejo desactivado
-    document.getElementById("progressText").textContent = "";
+
   }
 
   
@@ -621,7 +637,6 @@ function validarEmail() {
     PctAlineacion: typeof window.__pctAlineacion === 'number' ? window.__pctAlineacion : 0,
 
     // Métrica de motivación para adherirse a mejorar salud
-    InteresPersonal: typeof window.__interesPersonal === 'number' ? window.__interesPersonal : '',
     InteresPersonalPct: typeof window.__interesPersonalPct === 'number' ? window.__interesPersonalPct : '',
 
 
@@ -675,6 +690,9 @@ function validarEmail() {
           window.__pctSec1,
           window.__pctSec2
         );
+
+        // ocultar la barra de progreso al mostrar resultados
+        document.querySelector('.progress-bar')?.classList.add('hidden');
 
         // Ocultar botones de navegación (está duplicado por seguridad aquí) para que nunca reaparezca si se renderiza algo asíncrono
         __finished = true;
@@ -834,7 +852,6 @@ if (selInteres) {
   window.__pctTop = pctTop;
   window.__pctSec1 = pctSec1;
   window.__pctSec2 = pctSec2;
-  window.__interesPersonal = interesPersonal;
   window.__interesPersonalPct = interesPersonalPct;
 
   // Trazabilidad: respuestas completas y clave
@@ -919,7 +936,7 @@ function construirFeedbackHTML(pct, buckets, top, sec1, sec2, pctTop=0, pctSec1=
         <div class="ve-kpi">
           <div class="ve-badge">Interés personal en salud</div>
           <div style="margin-top:6px;">
-            <strong>${window.__interesPersonal}/5</strong> (${window.__interesPersonalPct}%)
+            <strong>${window.__interesPersonalPct}%</strong>
             <div class="ve-meter" aria-label="Nivel de interés personal" style="margin-top:6px;">
               <div class="ve-meter-fill" style="width:${window.__interesPersonalPct}%"></div>
             </div>
