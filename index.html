@@ -8,117 +8,62 @@
   <meta name="robots" content="noindex">
 
   <style>
-    body { font-family: Arial, sans-serif; background: #f0f0f0; padding: 20px; }
-    .container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; }
-    .progress-bar { height: 20px; background: #ddd; border-radius: 10px; margin-bottom: 20px; }
-    .progress-fill { height: 100%; width: 0%; background: #4caf50; transition: width 0.3s; }
-    .question-block { margin-bottom: 30px; }
-    
-    button { background: #4caf50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
-    .nav-buttons { display: flex; justify-content: space-between; }
-
-    .nav-buttons.hidden { display: none !important; }
-    .hidden { display: none !important; }
-
-
-    /* Estado normal del botón (ajusta a tu paleta) */
-    #btnEnviar {
-      transition: all 0.2s ease;
-    }
-
-    /* Estado enviando */
-    #btnEnviar.sending {
-      background-color: #9e9e9e !important; /* gris u otro color */
-      color: #ffffff !important;
-      cursor: not-allowed;
-      opacity: 0.9;
-      position:relative;
-    } 
-
-    /* Spinner básico (usa currentColor) */
-    .ve-spinner {
-      width: 20px; height: 20px;
-      margin-right: 8px;
-      border: 2px solid currentColor;
-      border-top-color: transparent;
-      border-radius: 50%;
-      display: inline-block;
-      vertical-align: -2px;
-      animation: ve-spin 0.7s linear infinite;
-    }
-
-    /* Mostrar en la tarejta de resultados la motivación del individuo en adherirse a mejorar sus hábitos*/    
-    .ve-meter{ width:100%; height:10px; background:#eee; border-radius:6px; overflow:hidden; margin-top:6px; }
-    .ve-meter-fill{ height:100%; width:0; background:#4caf50; transition:width .5s ease; border-radius:6px; }
-
-
-
-    /* Oculto por defecto dentro del botón */
-    #btnEnviar .ve-spinner { display: none; }
-
-    #btnEnviar.sending .ve-spinner { display: inline-block; }
-
-    @keyframes ve-spin {
-      to { transform: rotate(360deg); }
-    }
-
-
-  /* Tarjeta de resultado más clara y jerárquica */
-  .ve-result-card {
-    max-width: 720px;
-    margin: 16px auto;
-    text-align: left;
-    border: 1px solid #e9e9e9;
-    border-radius: 12px;
-    padding: 18px 20px;
-    background: #fff;
-    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+   
+  :root{
+    --bg:#f5f7f5;
+    --card:#ffffff;
+    --ink:#222;
+    --ink-2:#555;
+    --line:#e9ece9;
+    --brand:#2e7d32;
+    --brand-2:#4caf50;
   }
 
-  .ve-kpis {
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
-    gap: 8px 16px;
-    margin-top: 10px;
-  }
+  html,body{background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;color:var(--ink)}
+  *{box-sizing:border-box}
 
-  .ve-kpi {
-    background: #f8fbf8;
-    border: 1px solid #e7f3e7;
-    border-radius: 10px;
-    padding: 10px 12px;
-  }
+  .container{max-width:860px;margin:auto;background:var(--card);padding:24px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.04)}
+  h1{font-size:28px;margin:0 0 10px}
+  h2{margin:0 0 8px}
+  p{color:var(--ink-2)}
 
-  .ve-badge {
-    display:inline-block;
-    padding:4px 10px;
-    border-radius:999px;
-    background:#e8f5e9;
-    color:#2e7d32;
-    font-weight:600;
-    font-size:12px;
-  }
+  /* Progreso */
+  .progress-bar{height:10px;background:#e7efe7;border-radius:999px;margin:6px 0 14px;overflow:hidden}
+  .progress-fill{height:100%;width:0;background:var(--brand-2);transition:width .3s}
 
-  .ve-subtle { color:#666; font-size:12px; }
+  /* Navegación */
+  .nav-buttons{display:flex;justify-content:space-between;margin:16px auto 0;max-width:860px}
+  .nav-buttons.hidden{display:none!important}
+  .hidden{display:none!important}
 
-    button.btn-start {
-  display: inline-block;
-  background: #4caf50;
-  color: white;
-  font-size: 18px;
-  font-weight: bold;
-  padding: 14px 28px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-  transition: background 0.2s, transform 0.1s;
-}
+  /* Botón primario */
+  button{background:var(--brand-2);color:#fff;border:none;border-radius:10px;padding:12px 18px;font-weight:600;cursor:pointer;transition:transform .04s ease,opacity .2s}
+  button:hover{transform:translateY(-1px)}
+  button:disabled{opacity:.55;cursor:not-allowed}
 
-button.btn-start:hover {
-  background: #43a047;
-  transform: scale(1.02);
-}
+  /* CTA inicial (oportunidades) */
+  .btn-start{display:inline-flex;align-items:center;gap:10px;width:100%;font-size:18px;background:var(--brand-2)}
+  .badge-open{background:#e8f5e9;color:var(--brand);border:1px solid #d5edd7;border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 0 rgba(46,125,50,.6);animation:pulse 1.6s infinite}
+  @keyframes pulse{to{box-shadow:0 0 0 10px rgba(46,125,50,0)}}
+
+  /* Tarjeta resultado */
+  .ve-result-card{max-width:760px;margin:16px auto;text-align:left;border:1px solid var(--line);border-radius:12px;padding:18px 20px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .ve-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px 16px;margin-top:10px}
+  .ve-kpi{background:#f8fbf8;border:1px solid #e7f3e7;border-radius:10px;padding:10px 12px}
+  .ve-badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#e8f5e9;color:var(--brand);font-weight:700;font-size:12px}
+  .ve-subtle{color:#666;font-size:12px}
+  .ve-meter{width:100%;height:10px;background:#eee;border-radius:6px;overflow:hidden;margin-top:6px}
+  .ve-meter-fill{height:100%;width:0;background:var(--brand-2);transition:width .5s ease;border-radius:6px}
+
+  /* Enviar (estado enviando) */
+  #btnEnviar{position:relative}
+  #btnEnviar.sending{background:#9e9e9e}
+  .ve-spinner{width:18px;height:18px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;display:inline-block;vertical-align:-3px;animation:ve-spin .7s linear infinite;margin-right:8px}
+  #btnEnviar .ve-spinner{display:none}
+  #btnEnviar.sending .ve-spinner{display:inline-block}
+  @keyframes ve-spin{to{transform:rotate(360deg)}}
+
 
 
   </style>
@@ -131,9 +76,13 @@ button.btn-start:hover {
     <h2 style="text-align:center;color:#333;">OPORTUNIDADES ABIERTAS</h2>
 
   <!-- Botón para mostrar la oferta -->
-  <button onclick="toggleJob()" class="btn-start" style="width:100%;">
-  👉 Asistente de Bienestar en Clínica de Longevidad
+
+  <button onclick="toggleJob()" class="btn-start">
+    <span class="dot" aria-hidden="true"></span>
+   👉 Asistente de Bienestar - 100% Remoto
+    <span class="badge-open">Abierta</span>
   </button>
+
 
   <!-- Contenedor oculto que se despliega -->
   <div id="jobDetails" style="display:none;margin-top:20px;border:1px solid #ccc;
@@ -226,22 +175,20 @@ button.btn-start:hover {
 
 
 
-
-
-
 <div class="container hidden">
-  <h1>Cuestionario de segmentación de perfiles</h1>
+  <h1>Cuestionario de Estilo de Asistencia</h1>
   <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 <p id="progressText" style="text-align:right; font-weight:bold;"></p>
 
   <form id="quizForm">
   <div class='question-block' id='block0' style='display: none;'>
 <h2>Bienvenido/a al Examen de Selección para el puesto de Asistente de Bienestar</h2>
-<div class='question'><p>Este cuestionario no busca medir tus conocimientos teóricos, sino tu manera de pensar y de actuar frente a situaciones reales.</p>
-<p>Encontrarás 15 casos prácticos relacionados con la misión de VitalExtension: acercar la medicina de precisión y la longevidad a todas las personas, de forma humana, accesible y científica.</p>
-<p>No existen respuestas correctas o incorrectas. Cada opción refleja un estilo distinto de afrontar los retos. ¡Consejo!: Responde de manera sincera la alternativa que más haya resonado contigo, sin darle más vueltas.</p>
-<p>Busca un lugar cómodo y tranquilo, ya que sólo puedes hacer este test 1 vez. Este test no solo nos ayuda a conocerte mejor, también te permitirá descubrir cómo encajan tus valores con nuestra visión de transformar la salud y la vitalidad en la era digital.</p>
-<p>👉 Duración aproximada: 6 minutos.</p>
+<div class='question'>
+  <p><strong>Este cuestionario no mide teoría, sino tu forma de acompañar a personas reales.</strong></p>
+  <p>Encontrarás escenarios prácticos alineados con la misión de VitalExtension: acercar la medicina de precisión y la longevidad a todas las personas, de forma humana, accesible y científica.</p>
+  <p>No hay respuestas “correctas”: cada opción refleja un estilo distinto. Elige la que más resuene contigo, sin darle demasiadas vueltas.</p>
+  <p>Hazlo en un entorno tranquilo. Solo puede completarse una vez. Al final verás un resumen de tu estilo y cómo encaja con nuestro enfoque.</p>
+  <p>⏱️ Duración aproximada: 6 minutos.</p>
 </div>
 </div>
 <div class='question-block' id='block1' style='display: none;'>
@@ -404,12 +351,10 @@ button.btn-start:hover {
 
   
 <div id="emailScreen" class="hidden" style="text-align:center; margin-top: 30px;">
-    <h2>Para finalizar el Examen de Selección </h2>
-    <p>Indícanos el email con el que te postulaste en nuestra oferta de empleo</p>
+    <h2>Para terminar </h2>
+    <p>Indícanos el email con el que te inscribiste la oferta de empleo. <br>Tu resultado se mostrará en el siguiente paso.</p>
     
-    <p id="notaResultado" style="margin-top:8px;color:#555;">
-    Tu resultado psicométrico se mostrará en el <strong>siguiente paso</strong>, después de enviar tu email.
-  </p>  
+    
     <!-- Formulario para que el usuario ponga su nombre y su email -->
     <input id="userName" placeholder="Tu nombre" type="text" style="padding: 10px; width: 70%; max-width: 300px; margin-bottom: 10px;"><br>
     <input type="email" id="userEmail" placeholder="tu@email.com" style="padding: 10px; width: 70%; max-width: 300px;"><br><br>
@@ -449,13 +394,23 @@ button.btn-start:hover {
     Jamás cederemos tu email ni enviaremos spam. Solo lo usaremos para continuar con el proceso de Selección.
     </p>
       </div>
-    <button id="btnEnviar" type="button" onclick="validarEmail()" aria-live="polite">
+
+  <!-- Mensaje previo al envío -->
+  
+  <p id="preSendInfo" role="note" style="margin:10px 0 6px; font-size:12.5px; color:#555;">
+    Al pulsar <strong>ENVIAR</strong> registraremos tus datos y verás tu informe al instante.
+    <strong>No cierres esta ventana</strong>.
+  </p>
+
+
+    <button id="btnEnviar" aria-describedby="preSendInfo" type="button" onclick="validarEmail()" aria-live="polite">
       <span class="ve-spinner" aria-hidden="true"></span>
       <span class="ve-btn-text">Enviar mi Examen</span>
     </button>
 
-</div>
+ <div id="sendStatus" aria-live="polite" style="margin-top:8px; font-size:13px; color:#555;"></div>  <!-- Contenedor para el mensaje visual de "Por favor, espera unos segundos" cuando el usuario le da al botón "Enviar mi Examen" RGPD -->
 
+</div>
   <div id="result" class="hidden">
   </div>
 
@@ -473,7 +428,6 @@ let captchaActual = { pregunta: '', respuesta: '' };
 
   // Índice del bloque actual que se está mostrando
 let currentBlock = 0;
-
 
 let __finished = false;
 
@@ -562,6 +516,7 @@ function setSendingState(isSending) {
   const btn = document.getElementById('btnEnviar');
   if (!btn) return;
   const textEl = btn.querySelector('.ve-btn-text');
+  const statusEl = document.getElementById('sendStatus');
 
   if (isSending) {
     // guardar texto original y activar estilo
@@ -570,13 +525,22 @@ function setSendingState(isSending) {
     btn.disabled = true;
     btn.classList.add("sending");
     btn.setAttribute("aria-busy", "true");
+    if (statusEl) statusEl.textContent = "Por favor, espera unos segundos mientras registramos tus datos…";
   } else {
     // restaurar
     textEl.textContent = btn.dataset.originalText || "Enviar mi Examen";
     btn.disabled = false;
     btn.classList.remove("sending");
     btn.removeAttribute("aria-busy");
+    if (statusEl) statusEl.textContent = "";
   }
+}
+
+// Helper de fallo rápido
+function failAndUnlock(msg){
+  if (msg) alert(msg);
+  setSendingState(false);
+  return false;
 }
 
 
@@ -589,40 +553,32 @@ async function validarEmail() {
   const captcha = document.getElementById("captchaRespuesta").value.trim();
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-   // ✅ Validar que el email está correcto
-  if (!regex.test(email)) {
-    alert("Por favor, introduce un email válido.");
-    return;
-  }
+    // --- Guard & lock inmediato --- aunque el usuario haga “doble-click en el botón de "Enviar mi Examen", la segunda llamada sale por el return porque el botón ya está bloqueado.
+  const btn = document.getElementById('btnEnviar');
+  if (btn.disabled || btn.classList.contains('sending')) return;  // evita reentradas
+  setSendingState(true);      // 🔒 bloqueo y cambia a "ENVIANDO…" al instante
+  
+  
+  
+  // ✅ Validar que el email está correcto
+  if (!regex.test(email)) return failAndUnlock("Por favor, introduce un email válido.");
 
   // ✅  Revisar que el email no haya hecho ya el examen de Selección
   const ya = await emailExisteEnSheet(email);
-  if (ya) { alert("Este email ya ha realizado este Examen de Selección, y está en proceso de revisión. Muchas Gracias."); setSendingState(false); return; }
+  if (ya) return failAndUnlock("Este email ya ha realizado este Examen de Selección, y está en proceso de revisión. Muchas Gracias.");
 
   // ✅ Validar que el país está seleccionado
-    if (!pais) {
-    alert("Por favor, selecciona tu país de residencia.");
-    return;
-  } 
+  if (!pais) return failAndUnlock("Por favor, selecciona tu país de residencia.");
 
 
   // ✅ Validar RGPD
-  if (!document.getElementById("consentimientoRGPD").checked) {
-    alert("Debes aceptar la política de privacidad para continuar.");
-    return;
-  }
+  if (!document.getElementById("consentimientoRGPD").checked) return failAndUnlock("Debes aceptar la política de privacidad para continuar.");
 
     // ✅ Validar honeypot
-  if (document.getElementById("campoTrampa").value !== "") {
-    alert("Detección de comportamiento automático.");
-    return;
-  }
+  if (document.getElementById("campoTrampa").value !== "") return failAndUnlock("Detección de comportamiento automático.");
   
   // ✅ Validar CAPTCHA
-      if (!captchaActual || captcha.trim() !== String(captchaActual.respuesta).trim()) {
-    alert("Respuesta incorrecta a la verificación. Intenta de nuevo.");
-    return;
-}
+      if (!captchaActual || captcha.trim() !== String(captchaActual.respuesta).trim()) return failAndUnlock("Respuesta incorrecta a la verificación. Intenta de nuevo.")
 
     // Evitar doble clic + feedback visual
     setSendingState(true);
@@ -666,20 +622,6 @@ async function validarEmail() {
 
 
 
-
-// Verificar existencia de email
-
-async function emailExisteEnSheet(email) {
-  const url = "https://script.google.com/macros/s/AKfycbxeaeLrwEtgDJVtqJSk6w1i8T17yTmqp3t_j3_kM4oc1CYGsZMUroQH60suF_qj8to/exec"
-            + "?action=check&email=" + encodeURIComponent(email);
-  const res = await fetch(url);
-  const data = await res.json();
-  return !!(data && data.ok && data.exists);
-}
-
-
-
-
   // ✅ Enviar a Google Sheets. IMPORTANTE: enviarResultadosAGoogleSheets debe devolver Promise (return fetch(...))
   enviarResultadosAGoogleSheets(data)
       .then(() => {
@@ -720,6 +662,15 @@ async function emailExisteEnSheet(email) {
       });
     
 }
+
+async function emailExisteEnSheet(email) {
+  const url = "https://script.google.com/macros/s/AKfycbxeaeLrwEtgDJVtqJSk6w1i8T17yTmqp3t_j3_kM4oc1CYGsZMUroQH60suF_qj8to/exec"
+            + "?action=check&email=" + encodeURIComponent(email);
+  const res = await fetch(url);
+  const data = await res.json();
+  return !!(data && data.ok && data.exists);
+}
+
 
 function enviarResultadosAGoogleSheets(data) {
   const formData = new FormData();
@@ -922,9 +873,9 @@ function construirFeedbackHTML(pct, buckets, top, sec1, sec2, pctTop=0, pctSec1=
   <div style="text-align:center; margin-top: 22px;">
     <h2 style="margin-bottom:6px;">✨ Resultado de tu Examen</h2>
     <p style="max-width:700px;margin:0 auto 12px;color:#444;">
-      Este examen forma parte de nuestro proceso de selección basado en escenarios reales.
-      Algunas opciones no estaban alineadas con nuestros valores; otras nos ayudan a
-      perfilar tu <strong>estilo de acompañamiento</strong>.
+      Este ejercicio forma parte de nuestro proceso de selección basado en escenarios reales.
+      Algunas opciones no estaban alineadas con nuestros valores; otras nos ayudan a perfilar tu
+      <strong>estilo de acompañamiento</strong>.
     </p>
 
     <div class="ve-kpis">
@@ -974,25 +925,37 @@ function construirFeedbackHTML(pct, buckets, top, sec1, sec2, pctTop=0, pctSec1=
       <p><strong>Cómo potenciarte:</strong> ${f.potenciar}</p>
       <p class="ve-subtle" style="margin-top:8px;">
         Resultado orientativo y no clínico. Nos ayuda a entender tu forma de acompañar a las personas.
-        En la siguiente fase validaremos el encaje con el equipo.
       </p>
     </div>
 
-    <p style="margin-top:18px;">
-      Nuestra comunidad comparte <strong>biohacks, historias y descubrimientos</strong> para vivir más y mejor.
-      Únete a <a href="https://www.instagram.com/vitalextension" target="_blank" style="color:#4caf50;font-weight:bold;">Instagram</a>.
-    </p>
 
-    <div id="ctaRedes" style="margin-top: 12px; text-align: center;">
-      <a href="https://www.instagram.com/vitalextension" target="_blank" style="margin: 0 10px;">
-        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg"
-             alt="Instagram" width="40" height="40">
-      </a>
-      <a href="https://www.facebook.com/vitalextension" target="_blank" style="margin: 0 10px;">
-        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg"
-             alt="Facebook" width="40" height="40">
-      </a>
+    <div style="max-width:760px;margin:14px auto 0;padding:12px 14px;border:1px solid #e7f3e7;border-radius:10px;background:#f8fbf8;color:#2e7d32;">
+    ✅ <strong>Hemos recibido tus resultados correctamente.</strong> Nuestro equipo los revisará en detalle y, si encajas con el equipo, rol y cultura te contactaremos por email.
+     </div>
+
+    <div style="max-width:760px;margin:18px auto 0;text-align:center;">
+      <p style="font-size:16px;color:#444;margin-bottom:10px;">
+        Mientras esperas, <strong>únete a la comunidad</strong> donde compartimos casos reales, guías prácticas y oportunidades.
+      </p>
+      <div style="display:inline-flex;gap:16px;align-items:center;filter:grayscale(1);">
+        <a href="https://www.instagram.com/vitalextension" target="_blank" rel="noopener" aria-label="Instagram VitalExtension" title="Instagram">
+          <!-- SVG Instagram (monocromo) -->
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" role="img" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=61578791393799" target="_blank" rel="noopener" aria-label="Facebook VitalExtension" title="Facebook">
+          <!-- SVG Facebook (monocromo) -->
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="#111" role="img" aria-hidden="true">
+            <path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.41c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.23.2 2.23.2v2.47h-1.26c-1.24 0-1.62.77-1.62 1.55v1.86h2.77l-.44 2.91h-2.33V22c4.78-.76 8.44-4.92 8.44-9.94z"/>
+          </svg>
+        </a>
+      </div>
     </div>
+
+
   </div>`;
 }
 
@@ -1027,6 +990,14 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener("error", ev => {
   alert("⚠️ Error en el script: " + (ev.message || "desconocido") + "\nRevisa la consola (F12).");
 });
+
+window.addEventListener('unhandledrejection', ev => {
+  alert("⚠️ Error en el proceso: " + (ev.reason?.message || ev.reason || "desconocido"));
+  setSendingState(false);
+});
+
+
+
 </script>
 </body>
 </html>
