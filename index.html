@@ -581,7 +581,7 @@ function setSendingState(isSending) {
 
 
 // Validar email, RGPD, CAPTCHA, HONEYPOT, GOOGLESHEET antes de mostrar resultados finales
-function validarEmail() {
+async function validarEmail() {
   
   const pais = document.getElementById("pais").value;
   const name = document.getElementById("userName").value.trim();
@@ -594,6 +594,10 @@ function validarEmail() {
     alert("Por favor, introduce un email válido.");
     return;
   }
+
+  // ✅  Revisar que el email no haya hecho ya el examen de Selección
+  const ya = await emailExisteEnSheet(email);
+  if (ya) { alert("Este email ya ha realizado este Examen de Selección, y está en proceso de revisión. Muchas Gracias."); setSendingState(false); return; }
 
   // ✅ Validar que el país está seleccionado
     if (!pais) {
@@ -627,7 +631,7 @@ function validarEmail() {
   const data = {
     Nombre: name || "",
     Email: email,
-    Origen: "Examen_Seleccion_VitalExtension",
+    Origen: "Examen_Seleccion_Asistente_Bienestar_20250824",
     pais: pais,
 
 
@@ -663,12 +667,17 @@ function validarEmail() {
 
 
 
-// (Opcional) Verificar existencia de email
-// const yaExiste = await emailExisteEnSheet(email);
-// if (yaExiste) {
-//   alert("Este email ya ha realizado este Examen de Selección, y está en proceso de revisión");
-//   return;
-// }
+// Verificar existencia de email
+
+async function emailExisteEnSheet(email) {
+  const url = "https://script.google.com/macros/s/AKfycbxeaeLrwEtgDJVtqJSk6w1i8T17yTmqp3t_j3_kM4oc1CYGsZMUroQH60suF_qj8to/exec"
+            + "?action=check&email=" + encodeURIComponent(email);
+  const res = await fetch(url);
+  const data = await res.json();
+  return !!(data && data.ok && data.exists);
+}
+
+
 
 
   // ✅ Enviar a Google Sheets. IMPORTANTE: enviarResultadosAGoogleSheets debe devolver Promise (return fetch(...))
@@ -714,18 +723,27 @@ function validarEmail() {
 
 function enviarResultadosAGoogleSheets(data) {
   const formData = new FormData();
-  for (const key in data) formData.append(key, data[key]);
+
+   // Para cubrir dedupe y errores por email en el servidor:
+  formData.append('dedupe', 'true');
+
+  for (const key in data) {
+    formData.append(key, data[key] == null ? '' : data[key]);
+  }
 
   // DEVOLVER la promesa:
-  return fetch("https://script.google.com/macros/s/AKfycbxiG6oK4N_KJ6p6t9vjfEe82Z-RNl77-doyQg4SHv630Jyr3bl6uXPlcMXjnIUhXZRv/exec", {
+  return fetch("https://script.google.com/macros/s/AKfycbxeaeLrwEtgDJVtqJSk6w1i8T17yTmqp3t_j3_kM4oc1CYGsZMUroQH60suF_qj8to/exec", {
     method: "POST",
     body: formData
   })
-  .then(response => {
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return response.text();
+  .then(async (res) => {
+    const txt = await res.text();
+    // Apps Script devuelve 200 aunque haya error; parseamos el JSON
+    let json;
+    try { json = JSON.parse(txt); } catch { json = { ok:false, error:'JSON_PARSE' }; }
+    if (!json.ok) throw new Error(json.error || 'ERROR_DESCONOCIDO');
+    return json;
   });
-  // (sin .catch; lo captura validarEmail)
 }
 
 // ======== 1) NORMALIZACIÓN DE PILARES Y TEXTOS ========
@@ -1004,6 +1022,10 @@ function recolectarRespuestasSeleccionadas(seleccionadas){
 document.addEventListener('DOMContentLoaded', () => {
   showBlock(currentBlock);     // muestra el primer bloque
   actualizarProgreso();        // sincroniza la barra
+});
+
+window.addEventListener("error", ev => {
+  alert("⚠️ Error en el script: " + (ev.message || "desconocido") + "\nRevisa la consola (F12).");
 });
 </script>
 </body>
