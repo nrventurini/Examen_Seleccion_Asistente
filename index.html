@@ -64,6 +64,11 @@
   #btnEnviar.sending .ve-spinner{display:inline-block}
   @keyframes ve-spin{to{transform:rotate(360deg)}}
 
+  @media (prefers-reduced-motion: reduce){
+  .dot { animation: none; }
+  .progress-fill, .ve-meter-fill { transition: none; }
+  }
+
 
 
   </style>
@@ -77,7 +82,7 @@
 
   <!-- Botón para mostrar la oferta -->
 
-  <button onclick="toggleJob()" class="btn-start">
+  <button onclick="toggleJob()" class="btn-start" aria-expanded="false" aria-controls="jobDetails">
     <span class="dot" aria-hidden="true"></span>
    👉 Asistente de Bienestar - 100% Remoto
     <span class="badge-open">Abierta</span>
@@ -135,9 +140,13 @@
 
 <script>
   function toggleJob() {
-    const job = document.getElementById('jobDetails');
-    job.style.display = job.style.display === "none" ? "block" : "none";
-  }
+  const job = document.getElementById('jobDetails');
+  const isOpen = job.style.display === "block";
+  job.style.display = isOpen ? "none" : "block";
+  const btn = document.querySelector('.btn-start');
+  if (btn) btn.setAttribute('aria-expanded', String(!isOpen));
+}
+
 
   function toggleNextBtn() {
     const check = document.getElementById('confirmBox').checked;
@@ -356,8 +365,24 @@
     
     
     <!-- Formulario para que el usuario ponga su nombre y su email -->
-    <input id="userName" placeholder="Tu nombre" type="text" style="padding: 10px; width: 70%; max-width: 300px; margin-bottom: 10px;"><br>
-    <input type="email" id="userEmail" placeholder="tu@email.com" style="padding: 10px; width: 70%; max-width: 300px;"><br><br>
+    <input
+      id="userName"
+      placeholder="Tu nombre"
+      type="text"
+      style="padding:10px;width:70%;max-width:300px;margin-bottom:10px;">
+    <br>
+    <input
+      id="userEmail"
+      type="email"
+      placeholder="tu@email.com"
+      autocomplete="email"
+      autocapitalize="off"
+      autocorrect="off"
+      spellcheck="false"
+      inputmode="email"
+      style="padding:10px;width:70%;max-width:300px;">
+    <br><br>
+
 
   <!-- Pais de residencia -->
   <label for="pais">País de residencia:</label><br>
@@ -377,17 +402,21 @@
   <!-- CAPTCHA -->
     <div style="margin-top: 12px;">
       <label id="captchaPregunta" style="font-size: 14px;">Cargando pregunta de seguridad...</label><br/>
-      <input id="captchaRespuesta" type="text" style="margin-top: 4px; width: 60px;" />
+      <input id="captchaRespuesta" type="tel" inputmode="numeric" pattern="[0-9]*" style="margin-top:4px;width:60px;" />
+
     </div>
 
   <!-- Honeypot -->
-    <input id="campoTrampa" type="text" autocomplete="off" style="display: none;" />
+    <div style="position:absolute; left:-10000px; top:auto; width:1px; height:1px; overflow:hidden;" aria-hidden="true">
+      <label for="campoTrampa">No completar</label>
+      <input id="campoTrampa" type="text" tabindex="-1" autocomplete="new-password" />
+    </div>
 
   <!-- Checkbox RGPD -->
     <div style="margin-top: 12px; font-size: 14px;">
       <label for="consentimientoRGPD">
         <input id="consentimientoRGPD" type="checkbox" />
-        Acepto la <a href="https://nrventurini.github.io/Pol-tica_privacidad/" target="_blank">política de privacidad</a>.
+        Acepto la <a href="https://nrventurini.github.io/Pol-tica_privacidad/" target="_blank" rel="noopener noreferrer">política de privacidad</a>.
       </label>
     <p style="font-size: 13px; color: #555; margin-top: 8px;">
     <span style="font-size: 15px;">⚖️ <strong>Compromiso VitalExtension</strong>:</span>
@@ -423,6 +452,22 @@
 // Captcha global que comparten nextBlock() y validarEmail()
 let captchaActual = { pregunta: '', respuesta: '' };
 
+// HACEMOS GLOBAL EL BANCO DE PREGUNTAS CAPTCHA
+const preguntasCaptcha = [
+  { pregunta: "Pregunta de seguridad: ¿Cuánto es 3 + 5?", respuesta: "8" },
+  { pregunta: "Pregunta de seguridad: ¿Cuánto es 6 - 2?", respuesta: "4" },
+  { pregunta: "Pregunta de seguridad: ¿Cuánto es 1 + 2?", respuesta: "3" },
+  { pregunta: "Pregunta de seguridad: ¿Cuánto es 3 + 2?", respuesta: "5" },
+  { pregunta: "Pregunta de seguridad: ¿Cuánto es 5 + 2?", respuesta: "7" },
+  { pregunta: "Pregunta de seguridad: ¿Cuánto es 7 + 2?", respuesta: "9" },
+  { pregunta: "Pregunta de seguridad: ¿Cuánto es 2 x 1?", respuesta: "2" },
+  { pregunta: "Pregunta de seguridad: ¿Cuánto es 3 - 2?", respuesta: "1" },
+  { pregunta: "Pregunta de seguridad: ¿Cuánto es 3 + 3?", respuesta: "6" },
+  { pregunta: "Pregunta de seguridad: ¿Cuánto es 10 - 5?", respuesta: "5" }
+];
+
+
+
 // Esta sección gestiona la navegación por bloques, la validación de respuestas,
   const bloqueIds = ['block0', 'block1', 'block2', 'block3', 'block4', 'block5','block8', 'block9', 'block10', 'block11', 'block12', 'block13','block14','block15','block16','block17','block18'];
 
@@ -448,31 +493,32 @@ function showBlock(index) {
 // Valida que todas las preguntas del bloque actual estén respondidas.
 
 function nextBlock() {
-  if (__finished) return; // ⬅️ bloquea navegación tras finalizar el test (aunque ya los ocultamos, esto evita estados extraños si alguien triggera eventos vía teclado)
+  if (__finished) return;
   const block = document.getElementById(bloqueIds[currentBlock]);
-  const inputs = block.querySelectorAll('input');
-  for (let input of inputs) {
-    if (input.type === 'radio') {
-      const group = block.querySelectorAll(`input[name='${input.name}']`);
-      const isAnswered = Array.from(group).some(r => r.checked);
-      if (!isAnswered) { alert('Por favor, responde todas las preguntas antes de continuar.'); return; }
-    } else if (input.type === 'number' && !input.value) {
-      alert('Por favor, completa todos los campos numéricos.'); return;
+  // Validación por grupo (name)
+  const radios = block.querySelectorAll('input[type="radio"]');
+  const names = [...new Set([...radios].map(r => r.name))];
+  for (const name of names) {
+    if (!block.querySelector(`input[name="${name}"]:checked`)) {
+      alert('Por favor, responde todas las preguntas antes de continuar.');
+      return;
     }
+  }
+  const numbers = block.querySelectorAll('input[type="number"]');
+  for (const num of numbers) {
+    if (!num.value) { alert('Por favor, completa todos los campos numéricos.'); return; }
   }
   if (currentBlock < bloqueIds.length - 1) {
     currentBlock++;
     showBlock(currentBlock);
     actualizarProgreso();
   } else {
-    try {
-      calcularResultados();
-    } catch (err) {
-      console.error("calcularResultados() falló:", err);
-      alert("Ocurrió un problema al generar tu resultado. Refresca la página e inténtalo nuevamente.");
-    }
+    try { calcularResultados(); }
+    catch (err) { console.error("calcularResultados() falló:", err);
+      alert("Ocurrió un problema al generar tu resultado. Refresca la página e inténtalo nuevamente."); }
   }
 }
+
   
 // Función que se ejecuta al pulsar "Anterior" para retroceder al bloque anterior.
 function prevBlock() {
@@ -546,41 +592,46 @@ function failAndUnlock(msg){
 
 // Validar email, RGPD, CAPTCHA, HONEYPOT, GOOGLESHEET antes de mostrar resultados finales
 async function validarEmail() {
+ 
+
+ // --- Guard & lock inmediato --- aunque el usuario haga “doble-click en el botón de "Enviar mi Examen", la segunda llamada sale por el return porque el botón ya está bloqueado.
+  const btn = document.getElementById('btnEnviar');
+  if (btn.disabled || btn.classList.contains('sending')) return;  // evita reentradas
+  setSendingState(true);      // 🔒 bloqueo y cambia a "ENVIANDO…" al instante 
   
+// Lee campos
   const pais = document.getElementById("pais").value;
   const name = document.getElementById("userName").value.trim();
   const email = document.getElementById("userEmail").value.trim();
   const captcha = document.getElementById("captchaRespuesta").value.trim();
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    // --- Guard & lock inmediato --- aunque el usuario haga “doble-click en el botón de "Enviar mi Examen", la segunda llamada sale por el return porque el botón ya está bloqueado.
-  const btn = document.getElementById('btnEnviar');
-  if (btn.disabled || btn.classList.contains('sending')) return;  // evita reentradas
-  setSendingState(true);      // 🔒 bloqueo y cambia a "ENVIANDO…" al instante
   
-  
-  
-  // ✅ Validar que el email está correcto
+    // ✅ Validar honeypot
+  if (document.getElementById("campoTrampa").value !== "") return failAndUnlock("Detección de comportamiento automático.");
+
+  // 2) CAPTCHA (rápido) + regeneración si falla
+    ensureCaptcha();
+    if (!captchaActual || captcha !== String(captchaActual.respuesta).trim()) {
+      regenerateCaptcha(true); // 
+      return failAndUnlock("Respuesta incorrecta a la pregunta de seguridad. Intenta de nuevo.");
+    }
+
+    //3) ✅ Validar RGPD
+  if (!document.getElementById("consentimientoRGPD").checked) return failAndUnlock("Debes aceptar la política de privacidad para continuar.");
+
+    //4) ✅ Validar que el país está seleccionado
+    if (!pais) return failAndUnlock("Por favor, selecciona tu país de residencia.");
+
+  // ✅ Validar que el formato del email está correcto
   if (!regex.test(email)) return failAndUnlock("Por favor, introduce un email válido.");
 
   // ✅  Revisar que el email no haya hecho ya el examen de Selección
   const ya = await emailExisteEnSheet(email);
   if (ya) return failAndUnlock("Este email ya ha realizado este Examen de Selección, y está en proceso de revisión. Muchas Gracias.");
 
-  // ✅ Validar que el país está seleccionado
-  if (!pais) return failAndUnlock("Por favor, selecciona tu país de residencia.");
-
-
-  // ✅ Validar RGPD
-  if (!document.getElementById("consentimientoRGPD").checked) return failAndUnlock("Debes aceptar la política de privacidad para continuar.");
-
-    // ✅ Validar honeypot
-  if (document.getElementById("campoTrampa").value !== "") return failAndUnlock("Detección de comportamiento automático.");
-  
-  // ✅ Validar CAPTCHA
-      if (!captchaActual || captcha.trim() !== String(captchaActual.respuesta).trim()) return failAndUnlock("Respuesta incorrecta a la verificación. Intenta de nuevo.")
-
-    // Evitar doble clic + feedback visual
+ 
+  // Evitar doble clic + feedback visual
     setSendingState(true);
 
 // ===== empaquetar resultados ampliados =====
@@ -593,7 +644,7 @@ async function validarEmail() {
 
     // Métrica de alineación visión y arquetipos
     PuntuacionBruta: typeof window.__score === 'number' ? window.__score : 0,             // nº respuestas alineadas
-    TotalPreguntas: contarTotalPreguntas(),
+    TotalPreguntas: contarTotalPreguntas(true),
     PctAlineacion: typeof window.__pctAlineacion === 'number' ? window.__pctAlineacion : 0,
 
     // Métrica de motivación para adherirse a mejorar salud
@@ -622,7 +673,7 @@ async function validarEmail() {
 
 
 
-  // ✅ Enviar a Google Sheets. IMPORTANTE: enviarResultadosAGoogleSheets debe devolver Promise (return fetch(...))
+  // ✅ Enviar a Google Sheets. 
   enviarResultadosAGoogleSheets(data)
       .then(() => {
 
@@ -653,49 +704,79 @@ async function validarEmail() {
         // Mostrar el resultado
         resDiv.classList.remove("hidden");
       })
+      
       .catch(err => {
         console.error("Fallo al enviar información:", err);
-        alert("Se produjo un problema al registrar tus datos. Por favor, reintenta.");
-        
-        // Rehabilita el botón si falla
+        const statusEl = document.getElementById('sendStatus');
+        const msg = String(err && err.message || err);
+
+        // Mensajes amables según el error
+        if (/HTTP_429|QUOTA|OVERLOAD|Rate|Límite|Demasiadas/i.test(msg)) {
+          if (statusEl) {
+            statusEl.textContent = "📈 El servidor está muy concurrido ahora mismo. No perderás nada. Por favor, espera unos segundos y pulsa de nuevo “Enviar mi Examen”.";
+          }
+        } else {
+          if (statusEl) {
+            statusEl.textContent = "⚠️ Hemos tenido un problema registrando tus datos. No se han perdido. Reintenta en unos segundos.";
+          }
+        }
+
+        // Rehabilita el botón para reintentar
         setSendingState(false);
       });
+
     
 }
 
 async function emailExisteEnSheet(email) {
   const url = "https://script.google.com/macros/s/AKfycbxeaeLrwEtgDJVtqJSk6w1i8T17yTmqp3t_j3_kM4oc1CYGsZMUroQH60suF_qj8to/exec"
             + "?action=check&email=" + encodeURIComponent(email);
-  const res = await fetch(url);
-  const data = await res.json();
-  return !!(data && data.ok && data.exists);
+  try {
+    const res = await fetch(url, { method: "GET", cache: "no-store" });
+    if (!res.ok) return false;
+    const data = await res.json().catch(() => null);
+    return !!(data && data.ok && data.exists);
+  } catch (e) {
+    console.warn("Fallo check email (no bloqueo):", e);
+    return false; // degradación amable: no bloquea al usuario
+  }
 }
+
+async function postWithRetry(url, options, tries = 2){
+  let lastErr;
+  for (let i = 0; i <= tries; i++){
+    try {
+      const res = await fetch(url, { keepalive: true, ...options });
+      const txt = await res.text();
+      let json;
+      try { json = JSON.parse(txt); } catch { json = { ok:false, error:'JSON_PARSE' }; }
+      if (!res.ok || !json.ok) {
+        const msg = json.error || ('HTTP_' + res.status);
+        throw new Error(msg);
+      }
+      return json;
+    } catch(e){
+      lastErr = e;
+      await new Promise(r => setTimeout(r, 800 * (i + 1))); // backoff un poco mayor
+    }
+  }
+  throw lastErr;
+}
+
 
 
 function enviarResultadosAGoogleSheets(data) {
   const formData = new FormData();
+  formData.append('dedupe', 'true'); // soporte servidor
+  for (const key in data) formData.append(key, data[key] == null ? '' : data[key]);
 
-   // Para cubrir dedupe y errores por email en el servidor:
-  formData.append('dedupe', 'true');
-
-  for (const key in data) {
-    formData.append(key, data[key] == null ? '' : data[key]);
-  }
-
-  // DEVOLVER la promesa:
-  return fetch("https://script.google.com/macros/s/AKfycbxeaeLrwEtgDJVtqJSk6w1i8T17yTmqp3t_j3_kM4oc1CYGsZMUroQH60suF_qj8to/exec", {
+  // usa el helper con reintento
+  return postWithRetry("https://script.google.com/macros/s/AKfycbxeaeLrwEtgDJVtqJSk6w1i8T17yTmqp3t_j3_kM4oc1CYGsZMUroQH60suF_qj8to/exec", {
     method: "POST",
     body: formData
-  })
-  .then(async (res) => {
-    const txt = await res.text();
-    // Apps Script devuelve 200 aunque haya error; parseamos el JSON
-    let json;
-    try { json = JSON.parse(txt); } catch { json = { ok:false, error:'JSON_PARSE' }; }
-    if (!json.ok) throw new Error(json.error || 'ERROR_DESCONOCIDO');
-    return json;
-  });
+  }, 2);
 }
+
 
 // ======== 1) NORMALIZACIÓN DE PILARES Y TEXTOS ========
 const PILAR_MAP = {
@@ -766,7 +847,7 @@ function calcularResultados() {
 
   // 2) % de alineación con la visión (value=1)
   const alineadas = seleccionadas.filter(r => r.dataset.noalign !== 'true' && parseInt(r.value,10) === 1).length; //⬅️ Aquí tengo en cuenta que se ignore la pregunta que tiene como noalign === True
-  const totalPreguntas = new Set(seleccionadas.map(r => r.dataset.questionId)).size || contarTotalPreguntas();
+  const totalPreguntas = contarTotalPreguntas(true); // Excluir noalign del denominador
   const pctAlineacion = Math.round((alineadas / totalPreguntas) * 100);
 
   // 3) Conteo por arquetipo normalizado (solo en respuestas alineadas)
@@ -840,29 +921,41 @@ if (selInteres) {
 
 
 
-  // 8) Generar/actualizar CAPTCHA como ya hacías
-  const preguntasCaptcha = [
-    { pregunta: "Pregunta de seguridad: ¿Cuánto es 3 + 5?", respuesta: "8" },
-    { pregunta: "Pregunta de seguridad: ¿Cuánto es 6 - 2?", respuesta: "4" },
-    { pregunta: "Pregunta de seguridad: ¿Cuánto es 1 + 2?", respuesta: "3" },
-    { pregunta: "Pregunta de seguridad: ¿Cuánto es 3 + 2?", respuesta: "5" },
-    { pregunta: "Pregunta de seguridad: ¿Cuánto es 5 + 2?", respuesta: "7" },
-    { pregunta: "Pregunta de seguridad: ¿Cuánto es 7 + 2?", respuesta: "9" },
-    { pregunta: "Pregunta de seguridad: ¿Cuánto es 2 x 1?", respuesta: "2" },
-    { pregunta: "Pregunta de seguridad: ¿Cuánto es 3 - 2?", respuesta: "1" },
-    { pregunta: "Pregunta de seguridad: ¿Cuánto es 3 + 3?", respuesta: "6" },
-    { pregunta: "Pregunta de seguridad: ¿Cuánto es 10 - 5?", respuesta: "5" }
-  ];
+  // 8) Generar/actualizar
   captchaActual = preguntasCaptcha[Math.floor(Math.random() * preguntasCaptcha.length)];
   document.getElementById("captchaPregunta").textContent = captchaActual.pregunta;
 }
 
+function ensureCaptcha(){
+  if (captchaActual && captchaActual.pregunta) return;
+  captchaActual = preguntasCaptcha[Math.floor(Math.random()*preguntasCaptcha.length)];
+  const lbl = document.getElementById('captchaPregunta');
+  if (lbl) lbl.textContent = captchaActual.pregunta;
+}
+
+//Recargar el captcha automáticamente si el usuario se equivoca al hacer la operación de seguridad
+function regenerateCaptcha(clearInput = false){
+  captchaActual = preguntasCaptcha[Math.floor(Math.random() * preguntasCaptcha.length)];
+  const lbl = document.getElementById("captchaPregunta");
+  if (lbl) lbl.textContent = captchaActual.pregunta;
+  if (clearInput){
+    const input = document.getElementById("captchaRespuesta");
+    if (input) input.value = "";
+  }
+}
+
 
 // helpers
-function contarTotalPreguntas(){
+function contarTotalPreguntas(excluirNoAlign = false){
   const radios = Array.from(document.querySelectorAll("input[type='radio'][data-question-id]"));
-  return new Set(radios.map(r => r.dataset.questionId)).size;
+  const ids = new Set();
+  for (const r of radios){
+    if (excluirNoAlign && r.dataset.noalign === 'true') continue;
+    ids.add(r.dataset.questionId);
+  }
+  return ids.size;
 }
+
 
 function construirFeedbackHTML(pct, buckets, top, sec1, sec2, pctTop=0, pctSec1=0, pctSec2=0) {
   const f = FEEDBACK_TXT[top];
@@ -930,7 +1023,7 @@ function construirFeedbackHTML(pct, buckets, top, sec1, sec2, pctTop=0, pctSec1=
 
 
     <div style="max-width:760px;margin:14px auto 0;padding:12px 14px;border:1px solid #e7f3e7;border-radius:10px;background:#f8fbf8;color:#2e7d32;">
-    ✅ <strong>Hemos recibido tus resultados correctamente.</strong> Nuestro equipo los revisará en detalle y, si encajas con el equipo, rol y cultura te contactaremos por email.
+    ✅ <strong>Hemos recibido tus resultados correctamente.</strong> Nuestro equipo los revisará en detalle y, si encajas con el equipo, rol y cultura te contactaremos por email para coordinar una videollamada.
      </div>
 
     <div style="max-width:760px;margin:18px auto 0;text-align:center;">
@@ -987,14 +1080,21 @@ document.addEventListener('DOMContentLoaded', () => {
   actualizarProgreso();        // sincroniza la barra
 });
 
-window.addEventListener("error", ev => {
-  alert("⚠️ Error en el script: " + (ev.message || "desconocido") + "\nRevisa la consola (F12).");
-});
+const __DEV = false; // ponemos true sólo en pruebas locales
 
-window.addEventListener('unhandledrejection', ev => {
-  alert("⚠️ Error en el proceso: " + (ev.reason?.message || ev.reason || "desconocido"));
-  setSendingState(false);
-});
+if (__DEV) {
+  window.addEventListener("error", ev => {
+    alert("⚠️ Error en el script: " + (ev.message || "desconocido") + "\nRevisa la consola (F12).");
+  });
+  window.addEventListener('unhandledrejection', ev => {
+    alert("⚠️ Error en el proceso: " + (ev.reason?.message || ev.reason || "desconocido"));
+    setSendingState(false);
+  });
+} else {
+  window.addEventListener("error", () => {/* noop en producción */});
+  window.addEventListener('unhandledrejection', () => { setSendingState(false); });
+}
+
 
 
 
